@@ -20,6 +20,8 @@ var Module = fx.Module("zap",
 	provideSetupLoggerWrapper,
 )
 
+var FxPrinterLogger = fx.Provide(newLoggerPrinter)
+
 var FxEventLogger = fx.WithLogger(newFxEventLogger)
 
 var (
@@ -41,6 +43,25 @@ var (
 		),
 	)
 )
+
+type loggerPrinter struct {
+	l *zap.SugaredLogger
+}
+
+func newLoggerPrinter(logger *zap.SugaredLogger) fx.Printer {
+	return loggerPrinter{l: logger}
+}
+
+func (p loggerPrinter) Printf(msg string, args ...interface{}) {
+	log := p.l.Infow
+	for i := 0; i < len(args); i = i + 2 {
+		if k, ok := args[i].(string); ok && k == "error" {
+			log = p.l.Errorw
+			break
+		}
+	}
+	log(msg, args...)
+}
 
 type setupLoggerWrapper struct {
 	*zap.Logger
