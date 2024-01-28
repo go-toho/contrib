@@ -32,6 +32,8 @@ github.com/samber/slog-common v0.14.0 h1:g4TGALXmqogbJu3epRhjIWUJKSpgqB9VyN2OEnS
 github.com/samber/slog-common v0.14.0/go.mod h1:Qjrfhwk79XiCIhBj8+jTq1Cr0u9rlWbjawh3dWXzaHk=
 github.com/samber/slog-zap/v2 v2.2.0 h1:O9FevxkLKqv+7jxluk8krVlcdI9G+W8HlPv8WDvHbLQ=
 github.com/samber/slog-zap/v2 v2.2.0/go.mod h1:QOtMMGqrKKQHkljDp9W6jUgEkImPOWgqHPvlRdyexLo=
+github.com/samber/slog-zap/v2 v2.3.0 h1:llAvuHMc1N9GL76Yf1FKqWYhWRcwVFVv0XCx8gLo6Uk=
+github.com/samber/slog-zap/v2 v2.3.0/go.mod h1:QOtMMGqrKKQHkljDp9W6jUgEkImPOWgqHPvlRdyexLo=
 github.com/stretchr/testify v1.8.1 h1:w7B6lhMri9wdJUVmEZPGGhZzrYTPvgJArz7wNPgYKsk=
 github.com/stretchr/testify v1.8.1/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
 go.uber.org/atomic v1.11.0 h1:ZvwS0R+56ePWxUNi+Atn9dWONBPp/AUETXlHW0DxSjE=
