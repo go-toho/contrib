@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/go-toho/toho v0.0.0-20240115104200-b8c4be61c319
 	github.com/prometheus/client_golang v1.18.0
-	github.com/samber/slog-zap/v2 v2.2.0
+	github.com/samber/slog-zap/v2 v2.3.0
 	go.uber.org/fx v1.20.1
 	go.uber.org/zap v1.26.0
 )
