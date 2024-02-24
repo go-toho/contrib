@@ -7,7 +7,7 @@ require (
 	github.com/prometheus/client_golang v1.18.0
 	github.com/samber/slog-zap/v2 v2.3.0
 	go.uber.org/fx v1.20.1
-	go.uber.org/zap v1.26.0
+	go.uber.org/zap v1.27.0
 )
 
 require (
