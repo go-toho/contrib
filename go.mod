@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/go-toho/toho v0.0.0-20240316162314-ca3783e51097
 	github.com/prometheus/client_golang v1.19.0
-	github.com/samber/slog-zap/v2 v2.3.0
+	github.com/samber/slog-zap/v2 v2.3.2
 	go.uber.org/fx v1.21.0
 	go.uber.org/zap v1.27.0
 )
@@ -18,7 +18,7 @@ require (
 	github.com/prometheus/common v0.48.0 // indirect
 	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/samber/lo v1.38.1 // indirect
-	github.com/samber/slog-common v0.14.0 // indirect
+	github.com/samber/slog-common v0.15.2 // indirect
 	go.uber.org/dig v1.17.1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
