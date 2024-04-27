@@ -6,7 +6,7 @@ require (
 	github.com/go-toho/toho v0.0.0-20240316162314-ca3783e51097
 	github.com/prometheus/client_golang v1.19.0
 	github.com/samber/slog-zap/v2 v2.3.2
-	go.uber.org/fx v1.21.0
+	go.uber.org/fx v1.21.1
 	go.uber.org/zap v1.27.0
 )
 
