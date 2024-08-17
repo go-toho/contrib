@@ -3,7 +3,7 @@ module github.com/go-toho/contrib
 go 1.21
 
 require (
-	github.com/go-toho/toho v0.0.0-20240629103701-220eba830c21
+	github.com/go-toho/toho v0.0.0-20240810175225-ff19fa03a441
 	github.com/prometheus/client_golang v1.19.1
 	github.com/samber/slog-zap/v2 v2.6.0
 	go.uber.org/fx v1.22.2

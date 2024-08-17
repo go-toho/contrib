@@ -18,6 +18,8 @@ github.com/go-toho/toho v0.0.0-20240601044830-7f3330fe4e23 h1:mZtaMt18NQn2D1DNQC
 github.com/go-toho/toho v0.0.0-20240601044830-7f3330fe4e23/go.mod h1:pKdyboNomfAC4A5lStCLrEjeHakUErmsAZW6mF4JtBM=
 github.com/go-toho/toho v0.0.0-20240629103701-220eba830c21 h1:OmhU6a3HrLJzNlM3niCZ6JtmbBf9IoEod6Zg0xLRUdE=
 github.com/go-toho/toho v0.0.0-20240629103701-220eba830c21/go.mod h1:n3wfHbxUNfgRY1oLZo4HsWUtCoNd9lte321tW6ITOqw=
+github.com/go-toho/toho v0.0.0-20240810175225-ff19fa03a441 h1:pcus2brRLAUhXrvZgWFzr9Qhf95YfkJwa6ykPuoIVtU=
+github.com/go-toho/toho v0.0.0-20240810175225-ff19fa03a441/go.mod h1:im7aU2FwPTeZiETbAZ6Ivf5yRhK2YWlfQu6tNL/UD30=
 github.com/golang/protobuf v1.5.0/go.mod h1:FsONVRAS9T7sI+LIUmWTfcYkHO4aIWwzhcaSAoJOfIk=
 github.com/google/go-cmp v0.5.5/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/google/go-cmp v0.5.9 h1:O2Tfq5qg4qc4AmwVlvv0oLiVAGB7enBSJ2x2DqQFi38=
