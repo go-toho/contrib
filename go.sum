@@ -22,6 +22,8 @@ github.com/go-toho/toho v0.0.0-20240629103701-220eba830c21 h1:OmhU6a3HrLJzNlM3ni
 github.com/go-toho/toho v0.0.0-20240629103701-220eba830c21/go.mod h1:n3wfHbxUNfgRY1oLZo4HsWUtCoNd9lte321tW6ITOqw=
 github.com/go-toho/toho v0.0.0-20240810175225-ff19fa03a441 h1:pcus2brRLAUhXrvZgWFzr9Qhf95YfkJwa6ykPuoIVtU=
 github.com/go-toho/toho v0.0.0-20240810175225-ff19fa03a441/go.mod h1:im7aU2FwPTeZiETbAZ6Ivf5yRhK2YWlfQu6tNL/UD30=
+github.com/go-toho/toho v0.0.0-20241012095800-50e75df595ec h1:jQGILlA88XB5OGwhbJKrH/VzRTk1Iisi+3kzbvjFd7o=
+github.com/go-toho/toho v0.0.0-20241012095800-50e75df595ec/go.mod h1:s37sC14ybchaWpvGuz/0AKOLLEXln0ookCXwuPyO/hQ=
 github.com/golang/protobuf v1.5.0/go.mod h1:FsONVRAS9T7sI+LIUmWTfcYkHO4aIWwzhcaSAoJOfIk=
 github.com/google/go-cmp v0.5.5/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/google/go-cmp v0.5.9 h1:O2Tfq5qg4qc4AmwVlvv0oLiVAGB7enBSJ2x2DqQFi38=
@@ -106,6 +108,8 @@ go.uber.org/fx v1.22.1 h1:nvvln7mwyT5s1q201YE29V/BFrGor6vMiDNpU/78Mys=
 go.uber.org/fx v1.22.1/go.mod h1:HT2M7d7RHo+ebKGh9NRcrsrHHfpZ60nW3QRubMRfv48=
 go.uber.org/fx v1.22.2 h1:iPW+OPxv0G8w75OemJ1RAnTUrF55zOJlXlo1TbJ0Buw=
 go.uber.org/fx v1.22.2/go.mod h1:o/D9n+2mLP6v1EG+qsdT1O8wKopYAsqZasju97SDFCU=
+go.uber.org/fx v1.23.0 h1:lIr/gYWQGfTwGcSXWXu4vP5Ws6iqnNEIY+F/aFzCKTg=
+go.uber.org/fx v1.23.0/go.mod h1:o/D9n+2mLP6v1EG+qsdT1O8wKopYAsqZasju97SDFCU=
 go.uber.org/goleak v1.2.1 h1:NBol2c7O1ZokfZ0LEU9K6Whx/KnwvepVetCUhtKja4A=
 go.uber.org/goleak v1.2.1/go.mod h1:qlT2yGI9QafXHhZZLxlSuNsMw3FFLxBr+tBRlmO1xH4=
 go.uber.org/multierr v1.11.0 h1:blXXJkSxSSfBVBlC76pxqeO+LN3aDfLQo+309xJstO0=
