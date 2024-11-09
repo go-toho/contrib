@@ -15,7 +15,7 @@ import (
 	"github.com/go-toho/toho/pkg/fxtags"
 )
 
-var (
+const (
 	groupAllConnectHandlers = "connectrpcofx.AllConnectHandlers"
 )
 
