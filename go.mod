@@ -10,7 +10,7 @@ require (
 	connectrpc.com/otelconnect v0.7.1
 	github.com/creasty/defaults v1.8.0
 	github.com/go-playground/validator/v10 v10.22.1
-	github.com/go-toho/toho v0.0.0-20241012095800-50e75df595ec
+	github.com/go-toho/toho v0.0.0-20241108184720-38ecc1881350
 	github.com/prometheus/client_golang v1.20.5
 	github.com/samber/slog-zap/v2 v2.6.0
 	go.uber.org/fx v1.23.0
