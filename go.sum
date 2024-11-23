@@ -31,6 +31,8 @@ github.com/go-playground/universal-translator v0.18.1 h1:Bcnm0ZwsGyWbCzImXv+pAJn
 github.com/go-playground/universal-translator v0.18.1/go.mod h1:xekY+UJKNuX9WP91TpwSH2VMlDf28Uj24BCp08ZFTUY=
 github.com/go-playground/validator/v10 v10.22.1 h1:40JcKH+bBNGFczGuoBYgX4I6m/i27HYW8P9FDk5PbgA=
 github.com/go-playground/validator/v10 v10.22.1/go.mod h1:dbuPbCMFw/DrkbEynArYaCwl3amGuJotoKCe95atGMM=
+github.com/go-playground/validator/v10 v10.23.0 h1:/PwmTwZhS0dPkav3cdK9kV1FsAmrL8sThn8IHr/sO+o=
+github.com/go-playground/validator/v10 v10.23.0/go.mod h1:dbuPbCMFw/DrkbEynArYaCwl3amGuJotoKCe95atGMM=
 github.com/go-toho/toho v0.0.0-20241012095800-50e75df595ec h1:jQGILlA88XB5OGwhbJKrH/VzRTk1Iisi+3kzbvjFd7o=
 github.com/go-toho/toho v0.0.0-20241012095800-50e75df595ec/go.mod h1:s37sC14ybchaWpvGuz/0AKOLLEXln0ookCXwuPyO/hQ=
 github.com/go-toho/toho v0.0.0-20241108184720-38ecc1881350 h1:OHkjocABpg7l/Vhn8vylWkELUreTUxTvL2vScZUc5iw=
