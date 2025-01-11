@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	connectrpc.com/authn v0.2.0
-	connectrpc.com/connect v1.17.0
+	connectrpc.com/connect v1.18.1
 	connectrpc.com/grpchealth v1.3.0
 	connectrpc.com/grpcreflect v1.2.0
 	connectrpc.com/otelconnect v0.7.1
