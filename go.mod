@@ -12,7 +12,7 @@ require (
 	github.com/go-playground/validator/v10 v10.23.0
 	github.com/go-toho/toho v0.0.0-20241108184720-38ecc1881350
 	github.com/prometheus/client_golang v1.20.5
-	github.com/samber/slog-zap/v2 v2.6.1
+	github.com/samber/slog-zap/v2 v2.6.2
 	go.uber.org/fx v1.23.0
 	go.uber.org/zap v1.27.0
 	golang.org/x/net v0.34.0
@@ -35,7 +35,7 @@ require (
 	github.com/prometheus/common v0.55.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/samber/lo v1.47.0 // indirect
-	github.com/samber/slog-common v0.18.0 // indirect
+	github.com/samber/slog-common v0.18.1 // indirect
 	github.com/stretchr/testify v1.10.0 // indirect
 	go.opentelemetry.io/otel v1.19.0 // indirect
 	go.opentelemetry.io/otel/metric v1.19.0 // indirect
