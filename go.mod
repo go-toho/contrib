@@ -9,7 +9,7 @@ require (
 	connectrpc.com/grpcreflect v1.3.0
 	connectrpc.com/otelconnect v0.7.1
 	github.com/creasty/defaults v1.8.0
-	github.com/go-playground/validator/v10 v10.24.0
+	github.com/go-playground/validator/v10 v10.25.0
 	github.com/go-toho/toho v0.0.0-20241108184720-38ecc1881350
 	github.com/prometheus/client_golang v1.20.5
 	github.com/samber/slog-zap/v2 v2.6.2
