@@ -11,7 +11,7 @@ require (
 	github.com/creasty/defaults v1.8.0
 	github.com/go-playground/validator/v10 v10.25.0
 	github.com/go-toho/toho v0.0.0-20241108184720-38ecc1881350
-	github.com/prometheus/client_golang v1.21.0
+	github.com/prometheus/client_golang v1.21.1
 	github.com/samber/slog-zap/v2 v2.6.2
 	go.uber.org/fx v1.23.0
 	go.uber.org/zap v1.27.0
