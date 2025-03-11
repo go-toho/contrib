@@ -51,6 +51,8 @@ github.com/go-toho/toho v0.0.0-20241012095800-50e75df595ec h1:jQGILlA88XB5OGwhbJ
 github.com/go-toho/toho v0.0.0-20241012095800-50e75df595ec/go.mod h1:s37sC14ybchaWpvGuz/0AKOLLEXln0ookCXwuPyO/hQ=
 github.com/go-toho/toho v0.0.0-20241108184720-38ecc1881350 h1:OHkjocABpg7l/Vhn8vylWkELUreTUxTvL2vScZUc5iw=
 github.com/go-toho/toho v0.0.0-20241108184720-38ecc1881350/go.mod h1:s37sC14ybchaWpvGuz/0AKOLLEXln0ookCXwuPyO/hQ=
+github.com/go-toho/toho v0.0.0-20250308103820-83708b5d18b0 h1:8Z2/K5bqaq6qmqgn7ndKWqrWsFacm05Z+362fqxaRXo=
+github.com/go-toho/toho v0.0.0-20250308103820-83708b5d18b0/go.mod h1:s37sC14ybchaWpvGuz/0AKOLLEXln0ookCXwuPyO/hQ=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
 github.com/klauspost/compress v1.17.9 h1:6KIumPrER1LHsvBVuDa0r5xaG0Es51mhhB9BQB2qeMA=
