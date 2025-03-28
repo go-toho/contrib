@@ -150,7 +150,11 @@ func NewConnectServer(opts ...ConnectServerOption) (*ConnectServer, error) {
 	// chain handlers (aka "HTTP middleware")
 	if len(srv.httpMiddleware) > 0 {
 		for i := len(srv.httpMiddleware) - 1; i >= 0; i-- {
-			srv.handler = srv.httpMiddleware[i](srv.handler)
+			mw := srv.httpMiddleware[i]
+			if mw == nil {
+				continue
+			}
+			srv.handler = mw(srv.handler)
 		}
 	}
 
