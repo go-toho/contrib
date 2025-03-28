@@ -10,6 +10,7 @@ import (
 	"connectrpc.com/otelconnect"
 	"go.uber.org/fx"
 
+	"github.com/go-toho/contrib/middleware/corso"
 	"github.com/go-toho/contrib/net/connectrpco"
 	"github.com/go-toho/contrib/net/httpo"
 	"github.com/go-toho/toho/pkg/fxtags"
@@ -163,6 +164,14 @@ var WithGrpcReflectHandler = fx.Provide(
 			fxtags.Group(connectrpco.GroupConnectHandlerOptions),
 		),
 		fx.ResultTags(fxtags.GroupFlatten(connectrpco.GroupUtilityConnectHandler)),
+	),
+)
+
+var WithCorsHttpMiddleware = fx.Provide(
+	fx.Annotate(
+		connectrpco.NewCorsHandler,
+		fx.ParamTags(fxtags.Named(corso.NamedConfig)),
+		fx.ResultTags(fxtags.Group(connectrpco.GroupHttpMiddleware)),
 	),
 )
 
