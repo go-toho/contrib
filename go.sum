@@ -43,6 +43,8 @@ github.com/go-playground/validator/v10 v10.26.0 h1:SP05Nqhjcvz81uJaRfEV0YBSSSGMc
 github.com/go-playground/validator/v10 v10.26.0/go.mod h1:I5QpIEbmr8On7W0TktmJAumgzX4CA1XNl4ZmDuVHKKo=
 github.com/go-toho/toho v0.0.0-20250308103820-83708b5d18b0 h1:8Z2/K5bqaq6qmqgn7ndKWqrWsFacm05Z+362fqxaRXo=
 github.com/go-toho/toho v0.0.0-20250308103820-83708b5d18b0/go.mod h1:s37sC14ybchaWpvGuz/0AKOLLEXln0ookCXwuPyO/hQ=
+github.com/go-toho/toho v0.0.0-20250423084045-6792959989e4 h1:NsnJhB62JJUP3pb2K5KlASbTFG4jGlU3oOEFFuBvJc0=
+github.com/go-toho/toho v0.0.0-20250423084045-6792959989e4/go.mod h1:KPP3OSAsJ3FQ7LE83so1hYPvITFfs07h+JWWpNV2/IA=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
