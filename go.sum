@@ -45,6 +45,8 @@ github.com/go-toho/toho v0.0.0-20250308103820-83708b5d18b0 h1:8Z2/K5bqaq6qmqgn7n
 github.com/go-toho/toho v0.0.0-20250308103820-83708b5d18b0/go.mod h1:s37sC14ybchaWpvGuz/0AKOLLEXln0ookCXwuPyO/hQ=
 github.com/go-toho/toho v0.0.0-20250423084045-6792959989e4 h1:NsnJhB62JJUP3pb2K5KlASbTFG4jGlU3oOEFFuBvJc0=
 github.com/go-toho/toho v0.0.0-20250423084045-6792959989e4/go.mod h1:KPP3OSAsJ3FQ7LE83so1hYPvITFfs07h+JWWpNV2/IA=
+github.com/go-toho/toho v0.0.0-20250504114200-809a90d0119a h1:RmifS/2AHzAvpsU6b3dzYnhH51zItjuay9bKh1weVQQ=
+github.com/go-toho/toho v0.0.0-20250504114200-809a90d0119a/go.mod h1:UDnJVkfCHLn4wURg16haU5R4mCHeb8PWU6mQgq0nVXE=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
