@@ -5,25 +5,35 @@
     ":combinePatchMinorReleases",
     ":separateMultipleMajorReleases"
   ],
-  "enabledManagers": ["github-actions", "gomod", "custom.regex"],
+  "enabledManagers": ["github-actions", "gomod"],
   "minimumReleaseAge": "3 days",
+  "postUpgradeTasks": {
+    "commands": [
+      "command -v go >/dev/null 2>&1 && make tidy || { echo >&2 \"'golang' not installed; skipping\"; exit 0; }"
+    ],
+    "executionMode": "branch",
+    "fileFilters": [
+      "**/go.mod",
+      "**/go.sum"
+    ]
+  },
   "packageRules": [
     {
-      "description": "Automerge non-major updates",
+      "description": ["Automerge non-major updates"],
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true,
       "automergeStrategy": "rebase",
       "automergeType": "branch"
     },
     {
-      "description": "Use ci semantic type for some deps",
+      "description": ["Use ci semantic type for some deps"],
       "matchFileNames": [".github/workflows/**"],
       "semanticCommitType": "ci"
     },
     {
-      "description": "Update the Renovate GitHub action weekly with fix type",
+      "description": ["Update the Renovate GitHub action weekly with fix type"],
       "extends": [":semanticCommitType(fix)"],
-      "matchPackageNames": "renovatebot/github-action",
+      "matchPackageNames": ["renovatebot/github-action"],
       "semanticCommitType": "ci",
       "schedule": ["on Monday"]
     }
