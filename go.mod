@@ -14,7 +14,7 @@ require (
 	github.com/creasty/defaults v1.8.0
 	github.com/cristalhq/aconfig v0.18.7
 	github.com/go-playground/validator/v10 v10.26.0
-	github.com/go-toho/toho v0.0.0-20250608015235-8b2777c06aeb
+	github.com/go-toho/toho v0.0.0-20250621082000-612a6e79e607
 	github.com/prometheus/client_golang v1.22.0
 	github.com/rs/cors v1.11.1
 	github.com/samber/slog-zap/v2 v2.6.2
