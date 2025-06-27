@@ -7,16 +7,6 @@
   ],
   "enabledManagers": ["github-actions", "gomod"],
   "minimumReleaseAge": "3 days",
-  "postUpgradeTasks": {
-    "commands": [
-      "command -v go >/dev/null 2>&1 && make tidy || { echo >&2 \"'golang' not installed; skipping\"; exit 0; }"
-    ],
-    "executionMode": "branch",
-    "fileFilters": [
-      "**/go.mod",
-      "**/go.sum"
-    ]
-  },
   "packageRules": [
     {
       "description": ["Automerge non-major updates"],
@@ -36,6 +26,10 @@
       "matchPackageNames": ["renovatebot/github-action"],
       "semanticCommitType": "ci",
       "schedule": ["on Monday"]
+    },
+    {
+      "matchManagers": ["gomod"],
+      "postUpdateOptions": ["gomodTidy", "gomodUpdateImportPaths"]
     }
   ]
 }
