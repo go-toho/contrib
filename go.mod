@@ -2,7 +2,7 @@ module github.com/go-toho/contrib
 
 go 1.23.0
 
-toolchain go1.24.6
+toolchain go1.25.0
 
 require (
 	connectrpc.com/authn v0.2.0
