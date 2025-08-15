@@ -24,8 +24,15 @@ jobs:
     timeout-minutes: 20
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v5
+      - name: Set GitHub ENV variables
+        shell: bash
+        run: |
+          echo "GO_VERSION=$( (grep -m1 '^toolchain go' go.mod || grep -m1 '^go ' go.mod) | sed -nE 's/.*go[[:space:]]*//p')" >> $GITHUB_ENV
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
 
       - name: Run tests
         run: make test
