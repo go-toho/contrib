@@ -1,6 +1,6 @@
 module github.com/go-toho/contrib
 
-go 1.23.0
+go 1.24
 
 toolchain go1.25.1
 
@@ -10,7 +10,7 @@ require (
 	connectrpc.com/cors v0.1.0
 	connectrpc.com/grpchealth v1.4.0
 	connectrpc.com/grpcreflect v1.3.0
-	connectrpc.com/otelconnect v0.7.2
+	connectrpc.com/otelconnect v0.8.0
 	github.com/creasty/defaults v1.8.0
 	github.com/cristalhq/aconfig v0.19.0
 	github.com/go-playground/validator/v10 v10.27.0
