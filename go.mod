@@ -16,7 +16,7 @@ require (
 	github.com/go-playground/validator/v10 v10.30.1
 	github.com/go-test/deep v1.1.1
 	github.com/go-toho/toho v0.0.0-20251205040635-d0f1ee90067c
-	github.com/go-viper/mapstructure/v2 v2.4.0
+	github.com/go-viper/mapstructure/v2 v2.5.0
 	github.com/prometheus/client_golang v1.23.2
 	github.com/rs/cors v1.11.1
 	github.com/samber/slog-zap/v2 v2.6.2
