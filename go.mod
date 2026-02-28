@@ -1,6 +1,6 @@
 module github.com/go-toho/contrib
 
-go 1.24.0
+go 1.25.0
 
 toolchain go1.26.0
 
@@ -24,7 +24,7 @@ require (
 	github.com/stretchr/testify v1.11.1
 	go.uber.org/fx v1.24.0
 	go.uber.org/zap v1.27.1
-	golang.org/x/net v0.50.0
+	golang.org/x/net v0.51.0
 )
 
 require (
