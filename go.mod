@@ -13,7 +13,7 @@ require (
 	connectrpc.com/otelconnect v0.9.0
 	github.com/creasty/defaults v1.8.0
 	github.com/cristalhq/aconfig v0.19.0
-	github.com/go-playground/validator/v10 v10.30.1
+	github.com/go-playground/validator/v10 v10.30.2
 	github.com/go-test/deep v1.1.1
 	github.com/go-toho/toho v0.0.0-20260308015655-6a8256a33fc4
 	github.com/go-viper/mapstructure/v2 v2.5.0
@@ -32,7 +32,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
-	github.com/gabriel-vasile/mimetype v1.4.12 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.13 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
