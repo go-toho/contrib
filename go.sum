@@ -41,8 +41,8 @@ github.com/go-playground/validator/v10 v10.30.2 h1:JiFIMtSSHb2/XBUbWM4i/MpeQm9ZK
 github.com/go-playground/validator/v10 v10.30.2/go.mod h1:mAf2pIOVXjTEBrwUMGKkCWKKPs9NheYGabeB04txQSc=
 github.com/go-test/deep v1.1.1 h1:0r/53hagsehfO4bzD2Pgr/+RgHqhmf+k1Bpse2cTu1U=
 github.com/go-test/deep v1.1.1/go.mod h1:5C2ZWiW0ErCdrYzpqxLbTX7MG14M9iiw8DgHncVwcsE=
-github.com/go-toho/toho v0.0.0-20260308015655-6a8256a33fc4 h1:KP1Dlk542NUoWiWe+Xr76FmjootkQ+dUrEkh7brHYNA=
-github.com/go-toho/toho v0.0.0-20260308015655-6a8256a33fc4/go.mod h1:Rw4iPRQ//2bBIH20ng2sjM8s6Xoq9T7xUD6SEsgmv0A=
+github.com/go-toho/toho v0.0.0-20260415200211-9085c2ba05bd h1:0qYZfPKI/Jj4s4k+Ob4fO1KwpvRDhLCG+CnOUj2CojQ=
+github.com/go-toho/toho v0.0.0-20260415200211-9085c2ba05bd/go.mod h1:Wnv4jNCI+gVwldqobw4O9+hqNuOoKef4VQmr1FLyccY=
 github.com/go-viper/mapstructure/v2 v2.5.0 h1:vM5IJoUAy3d7zRSVtIwQgBj7BiWtMPfmPEgAXnvj1Ro=
 github.com/go-viper/mapstructure/v2 v2.5.0/go.mod h1:oJDH3BJKyqBA2TXFhDsKDGDTlndYOZ6rGS0BRZIxGhM=
 github.com/google/go-cmp v0.7.0 h1:wk8382ETsv4JYUZwIsn6YpYiWiBsYLSJiTsyBybVuN8=
