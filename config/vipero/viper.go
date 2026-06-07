@@ -47,7 +47,7 @@ func LoadConfig(v *viper.Viper, cfg any, configFiles []string, opts ...viper.Dec
 
 	for _, file := range configFiles {
 		// set the config file
-		viper.SetConfigFile(file)
+		v.SetConfigFile(file)
 		// read the config file and merge it into the viper instance
 		if err := v.MergeInConfig(); err != nil {
 			if _, ok := err.(viper.ConfigFileNotFoundError); ok {
@@ -62,19 +62,36 @@ func LoadConfig(v *viper.Viper, cfg any, configFiles []string, opts ...viper.Dec
 		return err
 	}
 
-	// include default decoder configuration
-	opts = append([]viper.DecoderConfigOption{
-		func(dc *mapstructure.DecoderConfig) {
-			dc.Squash = true
-			dc.TagName = jsonTagName
-		},
-	}, opts...)
-
-	if err := v.Unmarshal(cfg, opts...); err != nil {
+	if err := DecodeSettings(v, cfg, opts...); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+// DecodeSettings decodes all Viper settings into cfg.
+func DecodeSettings(v *viper.Viper, cfg any, opts ...viper.DecoderConfigOption) error {
+	config := &mapstructure.DecoderConfig{
+		DecodeHook: mapstructure.ComposeDecodeHookFunc(
+			mapstructure.StringToTimeDurationHookFunc(),
+			mapstructure.StringToSliceHookFunc(","),
+		),
+		WeaklyTypedInput: true,
+		Squash:           true,
+		Result:           cfg,
+		TagName:          jsonTagName,
+	}
+
+	for _, opt := range opts {
+		opt(config)
+	}
+
+	decoder, err := mapstructure.NewDecoder(config)
+	if err != nil {
+		return err
+	}
+
+	return decoder.Decode(v.AllSettings())
 }
 
 // structBindEnv binds environment variables into the Viper instance for
