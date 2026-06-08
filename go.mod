@@ -15,7 +15,7 @@ require (
 	github.com/cristalhq/aconfig v0.19.0
 	github.com/go-playground/validator/v10 v10.30.3
 	github.com/go-test/deep v1.1.1
-	github.com/go-toho/toho v0.0.0-20260510004238-afbce0ea14fb
+	github.com/go-toho/toho v0.0.0-20260605010030-7c7b2fba9670
 	github.com/go-viper/mapstructure/v2 v2.5.0
 	github.com/prometheus/client_golang v1.23.2
 	github.com/rs/cors v1.11.1
