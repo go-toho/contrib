@@ -11,7 +11,7 @@ require (
 	connectrpc.com/grpchealth v1.5.0
 	connectrpc.com/grpcreflect v1.3.0
 	connectrpc.com/otelconnect v0.9.0
-	github.com/creasty/defaults v1.9.0
+	github.com/creasty/defaults v1.10.0
 	github.com/cristalhq/aconfig v0.19.0
 	github.com/go-playground/validator/v10 v10.30.4
 	github.com/go-test/deep v1.1.1
