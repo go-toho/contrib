@@ -13,7 +13,7 @@ require (
 	connectrpc.com/otelconnect v0.9.0
 	github.com/creasty/defaults v1.11.0
 	github.com/cristalhq/aconfig v0.19.0
-	github.com/go-playground/validator/v10 v10.30.4
+	github.com/go-playground/validator/v10 v10.30.5
 	github.com/go-test/deep v1.1.1
 	github.com/go-toho/toho v0.0.0-20260904032034-71a63b86b106
 	github.com/go-viper/mapstructure/v2 v2.5.0
