@@ -175,17 +175,8 @@ var WithCorsHttpMiddleware = fx.Provide(
 	),
 )
 
-var WithOtelConnectInterceptor = func(trustRemote bool, omitTraceEvents bool) fx.Option {
-	var opts []otelconnect.Option
-
-	if trustRemote {
-		opts = append(opts, otelconnect.WithTrustRemote())
-	}
-
-	if omitTraceEvents {
-		opts = append(opts, otelconnect.WithoutTraceEvents())
-	}
-
+// WithOtelConnectInterceptor provides an interceptor configured with otelconnect options.
+var WithOtelConnectInterceptor = func(opts ...otelconnect.Option) fx.Option {
 	return fx.Provide(
 		fx.Annotate(
 			func() (connect.HandlerOption, error) {
