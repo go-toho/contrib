@@ -9,7 +9,7 @@ require (
 	connectrpc.com/connect v1.21.0
 	connectrpc.com/cors v0.1.0
 	connectrpc.com/grpchealth v1.5.0
-	connectrpc.com/grpcreflect v1.3.0
+	connectrpc.com/grpcreflect v1.3.1
 	connectrpc.com/otelconnect v0.10.0
 	github.com/creasty/defaults v1.11.0
 	github.com/cristalhq/aconfig v0.19.0
