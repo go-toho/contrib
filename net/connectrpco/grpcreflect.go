@@ -1,7 +1,7 @@
 package connectrpco
 
 import (
-	"connectrpc.com/connect"
+	"connectrpc.com/connect/v2"
 	"connectrpc.com/grpcreflect"
 
 	"github.com/go-toho/contrib/net/httpo"
