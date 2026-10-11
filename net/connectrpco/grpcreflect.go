@@ -2,24 +2,15 @@ package connectrpco
 
 import (
 	"connectrpc.com/connect/v2"
-	"connectrpc.com/grpcreflect"
-
-	"github.com/go-toho/contrib/net/httpo"
+	"connectrpc.com/grpcreflect/v2"
 )
 
-// NewGrpcReflectHandler creates a Connect gRPC reflection handler.
-func NewGrpcReflectHandler(services []string, options ...connect.HandlerOption) []httpo.HttpPatternHandler {
+// RegisterGrpcReflectHandler registers both reflection APIs for the supplied services.
+func RegisterGrpcReflectHandler(server *connect.Server, services []string) {
 	if len(services) == 0 {
-		return nil
+		return
 	}
-
-	checker := grpcreflect.NewStaticReflector(services...)
-
-	patternV1, handlerV1 := grpcreflect.NewHandlerV1(checker, options...)
-	patternV1Alpha, handlerV1Alpha := grpcreflect.NewHandlerV1Alpha(checker, options...)
-
-	return []httpo.HttpPatternHandler{
-		{Pattern: patternV1, Handler: handlerV1},
-		{Pattern: patternV1Alpha, Handler: handlerV1Alpha},
-	}
+	grpcreflect.Register(server, grpcreflect.WithNamer(grpcreflect.NamerFunc(func() []string {
+		return services
+	})))
 }

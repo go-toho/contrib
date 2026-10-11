@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"connectrpc.com/connect/v2"
+	"connectrpc.com/connect/v2/connecthttp"
 	"github.com/creasty/defaults"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -92,6 +94,15 @@ func HttpPatternHandlers(patternHandlers ...httpo.HttpPatternHandler) ConnectSer
 	}
 }
 
+// WithConnectServer mounts the registered RPC services with the supplied HTTP options.
+func WithConnectServer(server *connect.Server, options ...connecthttp.Option) ConnectServerOption {
+	return func(s *ConnectServer) {
+		s.rpcServer = server
+		// Preserve v1's unlimited read size unless the caller supplies a limit.
+		s.rpcOptions = append([]connecthttp.Option{connecthttp.WithReadMaxBytes(0)}, options...)
+	}
+}
+
 // HttpMiddleware with server http middleware.
 func HttpMiddleware(middleware ...httpo.HttpMiddleware) ConnectServerOption {
 	return func(s *ConnectServer) {
@@ -104,6 +115,8 @@ type ConnectServer struct {
 	*http.Server
 
 	config          *ConnectConfig
+	rpcServer       *connect.Server
+	rpcOptions      []connecthttp.Option
 	connectHandlers []httpo.HttpPatternHandler
 	httpMiddleware  []httpo.HttpMiddleware
 
@@ -136,6 +149,9 @@ func NewConnectServer(opts ...ConnectServerOption) (*ConnectServer, error) {
 
 	// create a new mux
 	srv.mux = http.NewServeMux()
+	if srv.rpcServer != nil {
+		connecthttp.Mount(srv.mux, srv.rpcServer, srv.rpcOptions...)
+	}
 
 	// add connect handlers
 	if len(srv.connectHandlers) > 0 {

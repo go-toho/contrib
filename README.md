@@ -29,6 +29,10 @@ Install the package or packages your application imports.
 
 Fx adapters live in matching `*ofx` subpackages.
 
+The ConnectRPC adapters use Connect Go v2. See the
+[ConnectRPC migration notes](net/connectrpco/README.md) for service registration,
+interceptors, and changes to the exported helpers.
+
 ## Fx Registry
 
 Some Fx adapters register themselves with Toho's Fx registry when imported for

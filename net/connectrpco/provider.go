@@ -6,6 +6,6 @@ const (
 	GroupHttpMiddleware = "connectrpco.HttpMiddleware"
 
 	GroupUtilityConnectHandler = "connectrpco.UtilityConnectHandler"
-	GroupConnectServiceNames   = "connectrpco.ConnectServiceNames"
+	GroupConnectInterceptor    = "connectrpco.ConnectInterceptor"
 	GroupConnectHandlerOptions = "connectrpco.ConnectHandlerOptions"
 )

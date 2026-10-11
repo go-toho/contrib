@@ -2,22 +2,13 @@ package connectrpco
 
 import (
 	"connectrpc.com/connect/v2"
-	"connectrpc.com/grpchealth"
-
-	"github.com/go-toho/contrib/net/httpo"
+	"connectrpc.com/grpchealth/v2"
 )
 
-// NewGrpcHealthHandler creates a Connect gRPC health handler.
-func NewGrpcHealthHandler(services []string, options ...connect.HandlerOption) []httpo.HttpPatternHandler {
+// RegisterGrpcHealthHandler registers health checks for the supplied services.
+func RegisterGrpcHealthHandler(server *connect.Server, services []string) {
 	if len(services) == 0 {
-		return nil
+		return
 	}
-
-	checker := grpchealth.NewStaticChecker(services...)
-
-	pattern, handler := grpchealth.NewHandler(checker, options...)
-
-	return []httpo.HttpPatternHandler{
-		{Pattern: pattern, Handler: handler},
-	}
+	grpchealth.Register(server, grpchealth.NewStaticChecker(services...))
 }

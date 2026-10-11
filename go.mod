@@ -8,8 +8,8 @@ require (
 	connectrpc.com/authn v0.2.0
 	connectrpc.com/connect/v2 v2.0.0
 	connectrpc.com/cors v0.1.0
-	connectrpc.com/grpchealth v1.5.0
-	connectrpc.com/grpcreflect v1.3.1
+	connectrpc.com/grpchealth/v2 v2.0.0
+	connectrpc.com/grpcreflect/v2 v2.0.0
 	connectrpc.com/otelconnect v0.12.0
 	github.com/creasty/defaults v1.11.0
 	github.com/cristalhq/aconfig v0.19.0
@@ -25,6 +25,7 @@ require (
 	go.uber.org/fx v1.24.0
 	go.uber.org/zap v1.28.0
 	golang.org/x/net v0.60.0
+	google.golang.org/protobuf v1.36.12
 )
 
 require (
@@ -62,5 +63,4 @@ require (
 	golang.org/x/crypto v0.57.0 // indirect
 	golang.org/x/sys v0.48.0 // indirect
 	golang.org/x/text v0.42.0 // indirect
-	google.golang.org/protobuf v1.36.12 // indirect
 )
