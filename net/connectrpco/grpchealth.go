@@ -2,7 +2,7 @@ package connectrpco
 
 import (
 	"connectrpc.com/connect"
-	"connectrpc.com/grpchealth"
+	"connectrpc.com/grpchealth/v2"
 
 	"github.com/go-toho/contrib/net/httpo"
 )
