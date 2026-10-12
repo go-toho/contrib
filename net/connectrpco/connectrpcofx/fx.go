@@ -23,7 +23,7 @@ var Module = fx.Module("connectrpc",
 	provideConnectConfig,
 	provideConnectServer,
 	provideHttpServer,
-	fx.Invoke(func(*connectrpco.ConnectServer) {}),
+	fx.Invoke(registerServerHooks),
 )
 
 var (
@@ -104,21 +104,22 @@ func NewConnectServer(
 	rpcServer *connect.Server,
 	handlerOptions []connecthttp.Option,
 	httpMiddleware []httpo.HttpMiddleware,
-	log fx.Printer,
-	lifecycle fx.Lifecycle,
 ) (*connectrpco.ConnectServer, error) {
 	if !config.Enabled {
-		log.Printf("Connect server not enabled")
 		return nil, nil
 	}
 
-	server, err := connectrpco.NewConnectServer(
+	return connectrpco.NewConnectServer(
 		connectrpco.WithConnectConfig(config),
 		connectrpco.WithConnectServer(rpcServer, handlerOptions...),
 		connectrpco.HttpMiddleware(httpMiddleware...),
 	)
-	if err != nil {
-		return nil, err
+}
+
+func registerServerHooks(server *connectrpco.ConnectServer, log fx.Printer, lifecycle fx.Lifecycle) {
+	if server == nil {
+		log.Printf("Connect server not enabled")
+		return
 	}
 
 	lifecycle.Append(fx.Hook{
@@ -139,8 +140,6 @@ func NewConnectServer(
 			return server.Shutdown(ctx)
 		},
 	})
-
-	return server, nil
 }
 
 var WithGrpcHealthHandler = fx.Supply(

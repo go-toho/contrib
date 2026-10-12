@@ -91,7 +91,7 @@ Connect errors, because that middleware uses the v1 error writer.
 | `SupplyConnectHandlerOptions(...connect.HandlerOption)` | `SupplyConnectHandlerOptions(...connecthttp.Option)` and `SupplyConnectInterceptors(...connect.ServerInterceptor)` |
 | `NewGrpcHealthHandler(services, options...)` | `RegisterGrpcHealthHandler(server, services)` |
 | `NewGrpcReflectHandler(services, options...)` | `RegisterGrpcReflectHandler(server, services)` |
-| `connectrpcofx.NewConnectServer(config, handlers, middleware, log, lifecycle) error` | `connectrpcofx.NewConnectServer(config, rpcServer, httpOptions, middleware, log, lifecycle) (*connectrpco.ConnectServer, error)` |
+| `connectrpcofx.NewConnectServer(config, handlers, middleware, log, lifecycle) error` | `connectrpcofx.NewConnectServer(config, rpcServer, httpOptions, middleware) (*connectrpco.ConnectServer, error)` |
 | `GroupConnectServiceNames` | Removed; application service names are collected from registered methods before utilities are added. |
 
 `GroupConnectHandler` now contains `func(*connect.Server)` registrations.
@@ -99,7 +99,8 @@ Connect errors, because that middleware uses the v1 error writer.
 `GroupConnectHandlerOptions` contains `connecthttp.Option` values.
 The new `GroupConnectInterceptor` contains `[]connect.ServerInterceptor` chains.
 Both the configured `*connect.Server` and `*connectrpco.ConnectServer` are available
-from Fx; the latter is nil when the HTTP server is disabled.
+from Fx; the latter is nil when the HTTP server is disabled. The module invokes
+an internal function to attach the HTTP server's start and stop lifecycle hooks.
 
 Health and reflection remain opt-in through `WithGrpcHealthHandler` and
 `WithGrpcReflectHandler`. Both skip registration when there are no application
