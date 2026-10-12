@@ -10,7 +10,6 @@ import (
 	"strings"
 	"testing"
 
-	"connectrpc.com/authn"
 	"connectrpc.com/connect/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -24,19 +23,13 @@ func TestNewAuthnMiddleware(t *testing.T) {
 		wantBody   string
 	}{
 		{
-			name:       "authn error",
-			err:        authn.Errorf("bad token"),
-			wantStatus: http.StatusUnauthorized,
-			wantBody:   `{"code":"unauthenticated","message":"bad token"}`,
-		},
-		{
-			name:       "connect v2 error",
+			name:       "connect error",
 			err:        connect.NewError(connect.CodeUnauthenticated, "bad token"),
 			wantStatus: http.StatusUnauthorized,
 			wantBody:   `{"code":"unauthenticated","message":"bad token"}`,
 		},
 		{
-			name:       "wrapped connect v2 error",
+			name:       "wrapped connect error",
 			err:        fmt.Errorf("auth: %w", connect.NewError(connect.CodePermissionDenied, "forbidden")),
 			wantStatus: http.StatusForbidden,
 			wantBody:   `{"code":"permission_denied","message":"forbidden"}`,
@@ -75,9 +68,24 @@ func TestNewAuthnMiddleware_Info(t *testing.T) {
 
 	var info any
 	handler := mw(http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
-		info = authn.GetInfo(r.Context())
+		info = GetAuthnInfo(r.Context())
 	}))
 	handler.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest(http.MethodPost, "/", nil))
 
 	assert.Equal(t, "user-1", info)
+}
+
+func TestNewAuthnMiddleware_GRPC(t *testing.T) {
+	mw := NewAuthnMiddleware(func(context.Context, *http.Request) (any, error) {
+		return nil, connect.NewError(connect.CodeUnauthenticated, "bad token")
+	})
+
+	rec := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodPost, "/test.v1.EchoService/Echo", nil)
+	req.Header.Set("Content-Type", "application/grpc")
+	mw(http.NotFoundHandler()).ServeHTTP(rec, req)
+
+	assert.Equal(t, http.StatusOK, rec.Code)
+	assert.Equal(t, "16", rec.Header().Get("Grpc-Status"))
+	assert.Equal(t, "bad token", rec.Header().Get("Grpc-Message"))
 }

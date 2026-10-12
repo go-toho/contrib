@@ -93,6 +93,8 @@ on your services first. Then update the wiring:
 | `SupplyConnectHandlerOptions(connect.WithReadMaxBytes(n))` and other HTTP options | `SupplyConnectHttpOptions(connecthttp.WithReadMaxBytes(n))` |
 | `GroupConnectHandlerOptions` | `GroupServerInterceptor` / `GroupConnectHttpOption` |
 | `GroupConnectHandler` (plain `httpo.HttpPatternHandler`) | `GroupHttpHandler` / `SupplyHttpHandlers(...)` |
+| `authn.GetInfo(ctx)` / `authn.SetInfo(ctx, info)` | `GetAuthnInfo(ctx)` / `SetAuthnInfo(ctx, info)` |
+| `authn.Errorf(...)` in the authentication function | `connect.NewError(connect.CodeUnauthenticated, ...)` |
 
 Behavior changes:
 
@@ -103,7 +105,8 @@ Behavior changes:
 - **Read limit.** Messages are limited to 4 MiB by default (v1 was unbounded)
   and larger ones fail with `resource_exhausted`. Use
   `connecthttp.WithReadMaxBytes` to raise the limit, or pass `0` for no limit.
-- **Authentication** still uses `connectrpc.com/authn`, which has no Connect v2
-  release yet. `NewAuthnMiddleware` accepts both `authn.Errorf` and v2
-  `connect.NewError` errors from the authentication function. Error details on
-  v2 errors are not forwarded.
+- **Authentication** no longer uses `connectrpc.com/authn`, which is built on
+  Connect v1; it uses a copy of the unreleased `connectrpc.com/authn/v2` until
+  that is published. The authentication function must return a v2
+  `*connect.Error`; `authn.Errorf` errors are written as `unknown`. Read the
+  authentication information with `GetAuthnInfo`; `authn.GetInfo` returns nil.

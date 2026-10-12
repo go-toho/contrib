@@ -2,34 +2,40 @@ package connectrpco
 
 import (
 	"context"
-	"errors"
 	"net/http"
 
-	"connectrpc.com/authn"
-	connectv1 "connectrpc.com/connect"
-	"connectrpc.com/connect/v2"
+	"connectrpc.com/connect/v2/connecthttp"
 
+	"github.com/go-toho/contrib/net/connectrpco/internal/authn"
 	"github.com/go-toho/contrib/net/httpo"
 )
 
-// NewAuthnMiddleware creates a Connect authentication middleware.
+// NewAuthnMiddleware creates HTTP middleware that authenticates requests before
+// they reach the Connect handlers, so unauthenticated requests are rejected
+// before the body is read.
 //
-// The authentication function may return either an authn.Errorf error or a
-// Connect v2 *connect.Error; both are written with their code and message.
-func NewAuthnMiddleware(authnFn func(context.Context, *http.Request) (any, error)) httpo.HttpMiddleware {
-	middleware := authn.NewMiddleware(func(ctx context.Context, req *http.Request) (any, error) {
-		info, err := authnFn(ctx, req)
-		return info, toConnectV1Error(err)
-	})
-	return middleware.Wrap
+// If authnFn returns an error, it is written in the format the RPC client
+// expects; return a *connect.Error, e.g. with connect.CodeUnauthenticated, to
+// set the code. Otherwise, any non-nil information it returns is available to
+// later middleware, interceptors and handlers through GetAuthnInfo.
+//
+// Pass the same Connect HTTP options used for the server, so errors are
+// written consistently with the handlers.
+func NewAuthnMiddleware(
+	authnFn func(context.Context, *http.Request) (any, error),
+	opts ...connecthttp.Option,
+) httpo.HttpMiddleware {
+	return authn.NewMiddleware(authnFn, opts...).Wrap
 }
 
-// toConnectV1Error converts a Connect v2 error into its v1 equivalent. authn is
-// built on Connect v1 and writes any other error type as CodeUnknown.
-// TODO: remove once authn supports Connect v2.
-func toConnectV1Error(err error) error {
-	if connectErr, ok := errors.AsType[*connect.Error](err); ok {
-		return connectv1.NewError(connectv1.Code(connectErr.Code()), errors.New(connectErr.Message()))
-	}
-	return err
+// GetAuthnInfo returns the authentication information attached to the context
+// by NewAuthnMiddleware, or nil if there is none.
+func GetAuthnInfo(ctx context.Context) any {
+	return authn.GetInfo(ctx)
+}
+
+// SetAuthnInfo attaches authentication information to the context, e.g. in
+// tests.
+func SetAuthnInfo(ctx context.Context, info any) context.Context {
+	return authn.SetInfo(ctx, info)
 }
