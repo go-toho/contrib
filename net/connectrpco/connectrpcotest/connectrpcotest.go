@@ -48,10 +48,10 @@ func NewServer(t testing.TB, opts ...connectrpco.ConnectServerOption) *Server {
 	}
 }
 
-// HttpClient returns an HTTP client for the server that speaks HTTP/2 without
-// TLS.
-func (s *Server) HttpClient() *http.Client {
-	return s.httpClient
+// Client returns a Connect client for the server, to pass to generated
+// New<Service>Client constructors.
+func (s *Server) Client(interceptors ...connect.ClientInterceptor) *connect.Client {
+	return connect.NewClient(s.Transport(), interceptors...)
 }
 
 // Transport returns a Connect transport for the server.
@@ -59,8 +59,8 @@ func (s *Server) Transport(opts ...connecthttp.Option) connect.Transport {
 	return connecthttp.NewTransport(s.HttpClient(), s.URL, opts...)
 }
 
-// Client returns a Connect client for the server, to pass to generated
-// New<Service>Client constructors.
-func (s *Server) Client(interceptors ...connect.ClientInterceptor) *connect.Client {
-	return connect.NewClient(s.Transport(), interceptors...)
+// HttpClient returns an HTTP client for the server that speaks HTTP/2 without
+// TLS.
+func (s *Server) HttpClient() *http.Client {
+	return s.httpClient
 }

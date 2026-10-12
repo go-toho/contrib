@@ -46,7 +46,6 @@ If ordering matters, supply them together in one `SupplyServerInterceptors` call
 ```go
 srv, err := connectrpco.NewConnectServer(
 	connectrpco.Address(":8080"),
-	connectrpco.ServerInterceptors(interceptor),
 	connectrpco.RegisterServices(
 		func(s *connect.Server) { pingv1connect.RegisterPingServiceHandler(s, pingServer) },
 	),
@@ -55,6 +54,7 @@ srv, err := connectrpco.NewConnectServer(
 		connectrpco.RegisterGrpcHealth,
 		connectrpco.RegisterGrpcReflect,
 	),
+	connectrpco.ServerInterceptors(interceptor),
 )
 ```
 
@@ -65,10 +65,10 @@ and returns clients for it. It uses HTTP/2 without TLS, so streaming RPCs work:
 
 ```go
 srv := connectrpcotest.NewServer(t,
-	connectrpco.ServerInterceptors(validate.NewServerInterceptor()),
 	connectrpco.RegisterServices(func(s *connect.Server) {
 		pingv1connect.RegisterPingServiceHandler(s, pingServer)
 	}),
+	connectrpco.ServerInterceptors(validate.NewServerInterceptor()),
 )
 client := pingv1connect.NewPingServiceClient(srv.Client())
 ```
@@ -85,24 +85,24 @@ on your services first. Then update the wiring:
 | v1 | v2 |
 | --- | --- |
 | `SupplyConnectHandler(pingv1connect.NewPingServiceHandler(...))` | `ProvideServiceHandler(pingv1connect.RegisterPingServiceHandler)` or `SupplyRegisterFuncs(...)` |
-| `SupplyConnectHandlerOptions(connect.WithInterceptors(i))` | `SupplyServerInterceptors(i)` |
-| `SupplyConnectHandlerOptions(connect.WithReadMaxBytes(n))` and other HTTP options | `SupplyConnectHttpOptions(connecthttp.WithReadMaxBytes(n))` |
-| `GroupConnectHandler` (plain `httpo.HttpPatternHandler`) | `GroupHttpHandler` / `SupplyHttpHandlers(...)` |
-| `GroupConnectHandlerOptions` | `GroupServerInterceptor` / `GroupConnectHttpOption` |
 | `GroupUtilityConnectHandler` | `GroupUtilityRegisterFunc` / `SupplyUtilityRegisterFuncs(...)` |
 | `GroupConnectServiceNames` | removed; service names are read from the server |
 | `NewGrpcHealthHandler(services, opts...)` | `RegisterGrpcHealth` |
 | `NewGrpcReflectHandler(services, opts...)` | `RegisterGrpcReflect`, or `grpcreflect.Register(server, opts...)` for options |
+| `SupplyConnectHandlerOptions(connect.WithInterceptors(i))` | `SupplyServerInterceptors(i)` |
+| `SupplyConnectHandlerOptions(connect.WithReadMaxBytes(n))` and other HTTP options | `SupplyConnectHttpOptions(connecthttp.WithReadMaxBytes(n))` |
+| `GroupConnectHandlerOptions` | `GroupServerInterceptor` / `GroupConnectHttpOption` |
+| `GroupConnectHandler` (plain `httpo.HttpPatternHandler`) | `GroupHttpHandler` / `SupplyHttpHandlers(...)` |
 
 Behavior changes:
 
+- **Reflection** lists every registered service with a protobuf schema,
+  including the reflection services themselves, instead of a static list.
+- **Interceptors are server-wide.** They apply to every service, including
+  health and reflection. v1 allowed per-handler options.
 - **Read limit.** Messages are limited to 4 MiB by default (v1 was unbounded)
   and larger ones fail with `resource_exhausted`. Use
   `connecthttp.WithReadMaxBytes` to raise the limit, or pass `0` for no limit.
-- **Interceptors are server-wide.** They apply to every service, including
-  health and reflection. v1 allowed per-handler options.
-- **Reflection** lists every registered service with a protobuf schema,
-  including the reflection services themselves, instead of a static list.
 - **Authentication** still uses `connectrpc.com/authn`, which has no Connect v2
   release yet. `NewAuthnMiddleware` accepts both `authn.Errorf` and v2
   `connect.NewError` errors from the authentication function. Error details on

@@ -131,18 +131,18 @@ func TestModule(t *testing.T) {
 		assert.Equal(t, `"hello"`, body)
 	})
 
-	t.Run("handler options", func(t *testing.T) {
-		status, body := echo(t, baseURL, `"`+strings.Repeat("x", 128)+`"`)
-		assert.Equal(t, http.StatusTooManyRequests, status)
-		assert.Contains(t, body, "resource_exhausted")
-	})
-
 	t.Run("health handler", func(t *testing.T) {
 		client := grpchealth.NewClient(connect.NewClient(connecthttp.NewTransport(http.DefaultClient, baseURL)))
 
 		res, err := client.Check(t.Context(), &grpchealth.CheckRequest{Service: echotest.ServiceName})
 		require.NoError(t, err)
 		assert.Equal(t, grpchealth.StatusServing, res.Status)
+	})
+
+	t.Run("connect http options", func(t *testing.T) {
+		status, body := echo(t, baseURL, `"`+strings.Repeat("x", 128)+`"`)
+		assert.Equal(t, http.StatusTooManyRequests, status)
+		assert.Contains(t, body, "resource_exhausted")
 	})
 
 	assert.Positive(t, interceptorCalls.Load())

@@ -66,70 +66,6 @@ func TestConnectServer_RegisterServices(t *testing.T) {
 	assert.Equal(t, `"hello"`, body)
 }
 
-func TestConnectServer_ServerInterceptors(t *testing.T) {
-	var calls []string
-	interceptor := func(name string) connect.ServerInterceptor {
-		return func(next connect.ServerFunc) connect.ServerFunc {
-			return func(ctx context.Context, spec connect.Spec, stream connect.ServerStream) error {
-				calls = append(calls, name+":"+spec.Procedure)
-				return next(ctx, spec, stream)
-			}
-		}
-	}
-
-	ts := newTestServer(t,
-		RegisterServices(echotest.Register),
-		ServerInterceptors(interceptor("first"), interceptor("second")),
-	)
-
-	status, _ := echo(t, ts.URL, `"hello"`)
-	assert.Equal(t, http.StatusOK, status)
-	assert.Equal(t, []string{
-		"first:/" + echotest.ServiceName + "/Echo",
-		"second:/" + echotest.ServiceName + "/Echo",
-	}, calls)
-}
-
-func TestConnectServer_ConnectHttpOptions(t *testing.T) {
-	ts := newTestServer(t,
-		RegisterServices(echotest.Register),
-		ConnectHttpOptions(connecthttp.WithReadMaxBytes(8)),
-	)
-
-	status, body := echo(t, ts.URL, `"this message is too long"`)
-	assert.Equal(t, http.StatusTooManyRequests, status)
-	assert.Contains(t, body, "resource_exhausted")
-}
-
-func TestConnectServer_HttpHandlersAndMiddleware(t *testing.T) {
-	var middlewareCalls atomic.Int32
-
-	ts := newTestServer(t,
-		RegisterServices(echotest.Register),
-		Handle("/plain", http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
-			_, _ = io.WriteString(w, "plain")
-		})),
-		HttpMiddleware(func(next http.Handler) http.Handler {
-			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				middlewareCalls.Add(1)
-				next.ServeHTTP(w, r)
-			})
-		}),
-	)
-
-	res, err := http.Get(ts.URL + "/plain")
-	require.NoError(t, err)
-	defer res.Body.Close()
-	data, err := io.ReadAll(res.Body)
-	require.NoError(t, err)
-	assert.Equal(t, "plain", string(data))
-
-	status, _ := echo(t, ts.URL, `"hello"`)
-	assert.Equal(t, http.StatusOK, status)
-
-	assert.Equal(t, int32(2), middlewareCalls.Load())
-}
-
 func TestConnectServer_RegisterUtilityServices(t *testing.T) {
 	var procedures []string
 
@@ -208,4 +144,68 @@ func TestRegisterGrpcReflect(t *testing.T) {
 		grpcreflect.ReflectV1ServiceName,
 		grpcreflect.ReflectV1AlphaServiceName,
 	}, names)
+}
+
+func TestConnectServer_ServerInterceptors(t *testing.T) {
+	var calls []string
+	interceptor := func(name string) connect.ServerInterceptor {
+		return func(next connect.ServerFunc) connect.ServerFunc {
+			return func(ctx context.Context, spec connect.Spec, stream connect.ServerStream) error {
+				calls = append(calls, name+":"+spec.Procedure)
+				return next(ctx, spec, stream)
+			}
+		}
+	}
+
+	ts := newTestServer(t,
+		RegisterServices(echotest.Register),
+		ServerInterceptors(interceptor("first"), interceptor("second")),
+	)
+
+	status, _ := echo(t, ts.URL, `"hello"`)
+	assert.Equal(t, http.StatusOK, status)
+	assert.Equal(t, []string{
+		"first:/" + echotest.ServiceName + "/Echo",
+		"second:/" + echotest.ServiceName + "/Echo",
+	}, calls)
+}
+
+func TestConnectServer_ConnectHttpOptions(t *testing.T) {
+	ts := newTestServer(t,
+		RegisterServices(echotest.Register),
+		ConnectHttpOptions(connecthttp.WithReadMaxBytes(8)),
+	)
+
+	status, body := echo(t, ts.URL, `"this message is too long"`)
+	assert.Equal(t, http.StatusTooManyRequests, status)
+	assert.Contains(t, body, "resource_exhausted")
+}
+
+func TestConnectServer_HttpHandlersAndMiddleware(t *testing.T) {
+	var middlewareCalls atomic.Int32
+
+	ts := newTestServer(t,
+		RegisterServices(echotest.Register),
+		Handle("/plain", http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+			_, _ = io.WriteString(w, "plain")
+		})),
+		HttpMiddleware(func(next http.Handler) http.Handler {
+			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				middlewareCalls.Add(1)
+				next.ServeHTTP(w, r)
+			})
+		}),
+	)
+
+	res, err := http.Get(ts.URL + "/plain")
+	require.NoError(t, err)
+	defer res.Body.Close()
+	data, err := io.ReadAll(res.Body)
+	require.NoError(t, err)
+	assert.Equal(t, "plain", string(data))
+
+	status, _ := echo(t, ts.URL, `"hello"`)
+	assert.Equal(t, http.StatusOK, status)
+
+	assert.Equal(t, int32(2), middlewareCalls.Load())
 }

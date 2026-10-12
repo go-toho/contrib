@@ -87,9 +87,9 @@ func NewConnectServer(
 
 	server, err := connectrpco.NewConnectServer(
 		connectrpco.WithConnectConfig(config),
-		connectrpco.ServerInterceptors(serverInterceptors...),
 		connectrpco.RegisterServices(registerFuncs...),
 		connectrpco.RegisterUtilityServices(utilityRegisterFuncs...),
+		connectrpco.ServerInterceptors(serverInterceptors...),
 		connectrpco.ConnectHttpOptions(connectHttpOptions...),
 		connectrpco.HttpPatternHandlers(httpHandlers...),
 		connectrpco.HttpMiddleware(httpMiddleware...),
@@ -138,14 +138,6 @@ var WithGrpcReflectHandler = fx.Provide(
 	),
 )
 
-var WithCorsHttpMiddleware = fx.Provide(
-	fx.Annotate(
-		connectrpco.NewCorsHandler,
-		fx.ParamTags(fxtags.Named(corso.NamedConfig)),
-		fx.ResultTags(fxtags.Group(connectrpco.GroupHttpMiddleware)),
-	),
-)
-
 // WithOtelConnectInterceptor provides a server interceptor configured with otelconnect options.
 var WithOtelConnectInterceptor = func(opts ...otelconnect.Option) fx.Option {
 	return fx.Provide(
@@ -157,6 +149,14 @@ var WithOtelConnectInterceptor = func(opts ...otelconnect.Option) fx.Option {
 		),
 	)
 }
+
+var WithCorsHttpMiddleware = fx.Provide(
+	fx.Annotate(
+		connectrpco.NewCorsHandler,
+		fx.ParamTags(fxtags.Named(corso.NamedConfig)),
+		fx.ResultTags(fxtags.Group(connectrpco.GroupHttpMiddleware)),
+	),
+)
 
 // ProvideServiceHandler registers a Connect service whose implementation is
 // resolved from the container, e.g.
