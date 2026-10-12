@@ -6,6 +6,7 @@ toolchain go1.27.2
 
 require (
 	connectrpc.com/authn v0.2.0
+	connectrpc.com/connect v1.21.0
 	connectrpc.com/connect/v2 v2.0.0
 	connectrpc.com/cors v0.1.0
 	connectrpc.com/grpchealth/v2 v2.0.0
@@ -29,7 +30,6 @@ require (
 )
 
 require (
-	connectrpc.com/connect v1.21.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
