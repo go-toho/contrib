@@ -186,8 +186,8 @@ var WithOtelConnectInterceptor = func(opts ...otelconnect.Option) fx.Option {
 	)
 }
 
-// SupplyConnectHandlerOptions supplies HTTP options for all registered RPC services.
-func SupplyConnectHandlerOptions(opts ...connecthttp.Option) fx.Option {
+// SupplyConnectHttpHandlerOptions supplies HTTP options for all registered RPC services.
+func SupplyConnectHttpHandlerOptions(opts ...connecthttp.Option) fx.Option {
 	return fx.Provide(
 		fx.Annotate(
 			func() []connecthttp.Option {

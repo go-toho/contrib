@@ -223,7 +223,7 @@ func TestModuleReadLimits(t *testing.T) {
 		{name: "explicit unlimited", limit: []connecthttp.Option{connecthttp.WithReadMaxBytes(0)}, size: 4*1024*1024 + 1},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			server := newHTTPServer(t, connectrpcofx.SupplyConnectHandler(registerEcho), connectrpcofx.SupplyConnectHandlerOptions(test.limit...))
+			server := newHTTPServer(t, connectrpcofx.SupplyConnectHandler(registerEcho), connectrpcofx.SupplyConnectHttpHandlerOptions(test.limit...))
 			client := connect.NewClient(connecthttp.NewTransport(server.Client(), server.URL, connecthttp.WithReadMaxBytes(0)))
 			request := wrapperspb.String(strings.Repeat("x", test.size))
 			var response wrapperspb.StringValue

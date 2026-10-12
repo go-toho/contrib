@@ -48,12 +48,12 @@ that mutates the Connect server can run after HTTP routes have been installed.
 Separate HTTP options from interceptors:
 
 ```go
-connectrpcofx.SupplyConnectHandlerOptions(connecthttp.WithReadMaxBytes(8 << 20))
+connectrpcofx.SupplyConnectHttpHandlerOptions(connecthttp.WithReadMaxBytes(8 << 20))
 connectrpcofx.SupplyConnectInterceptors(authInterceptor, loggingInterceptor)
 connectrpcofx.WithOtelConnectInterceptor(otelconnect.WithTracerProvider(provider))
 ```
 
-`SupplyConnectHandlerOptions` now accepts `connecthttp.Option`.
+`SupplyConnectHttpHandlerOptions` accepts `connecthttp.Option` values.
 `SupplyConnectInterceptors` accepts v2 `connect.ServerInterceptor` values;
 interceptors apply to application, health, and reflection RPCs. Put interceptors
 whose order matters in one call: order within that call is preserved, while
@@ -88,7 +88,7 @@ Connect errors, because that middleware uses the v1 error writer.
 | Previous API | v2 API |
 | --- | --- |
 | `SupplyConnectHandler(func(...connect.HandlerOption) (string, http.Handler))` | `SupplyConnectHandler(func(*connect.Server))` |
-| `SupplyConnectHandlerOptions(...connect.HandlerOption)` | `SupplyConnectHandlerOptions(...connecthttp.Option)` and `SupplyConnectInterceptors(...connect.ServerInterceptor)` |
+| `SupplyConnectHandlerOptions(...connect.HandlerOption)` | `SupplyConnectHttpHandlerOptions(...connecthttp.Option)` and `SupplyConnectInterceptors(...connect.ServerInterceptor)` |
 | `NewGrpcHealthHandler(services, options...)` | `RegisterGrpcHealthHandler(server, services)` |
 | `NewGrpcReflectHandler(services, options...)` | `RegisterGrpcReflectHandler(server, services)` |
 | `connectrpcofx.NewConnectServer(config, handlers, middleware, log, lifecycle) error` | `connectrpcofx.NewConnectServer(config, rpcServer, httpOptions, httpHandlers, utilityHttpHandlers, middleware) (*connectrpco.ConnectServer, error)` |
@@ -123,7 +123,7 @@ only, as before; health checks use the same application service list.
 
 The HTTP wrapper uses Connect v2's default read limit of 4 MiB per message.
 Larger messages fail with `CodeResourceExhausted`. Set `connecthttp.WithReadMaxBytes`
-through `WithConnectServer` or `SupplyConnectHandlerOptions` to override the limit;
+through `WithConnectServer` or `SupplyConnectHttpHandlerOptions` to override the limit;
 pass `0` to explicitly allow unlimited reads. This changes v1's unlimited default.
 V2 clients also default to 4 MiB, so configure their transport separately when
 large responses are required.
