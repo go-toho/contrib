@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"slices"
 	"time"
 
 	"connectrpc.com/connect/v2"
@@ -85,6 +86,15 @@ func RegisterServices(fns ...RegisterFunc) ConnectServerOption {
 	}
 }
 
+// RegisterUtilityServices registers utility services, such as health and
+// reflection. They run after all services passed to RegisterServices,
+// regardless of option order, so they can inspect the registered services.
+func RegisterUtilityServices(fns ...RegisterFunc) ConnectServerOption {
+	return func(s *ConnectServer) {
+		s.utilityRegisterFuncs = append(s.utilityRegisterFuncs, fns...)
+	}
+}
+
 // ServerInterceptors with Connect server interceptors. Interceptors apply to
 // every registered service; the first one wraps the outermost call.
 func ServerInterceptors(interceptors ...connect.ServerInterceptor) ConnectServerOption {
@@ -129,12 +139,13 @@ func HttpMiddleware(middleware ...httpo.HttpMiddleware) ConnectServerOption {
 type ConnectServer struct {
 	*http.Server
 
-	config             *ConnectConfig
-	registerFuncs      []RegisterFunc
-	serverInterceptors []connect.ServerInterceptor
-	connectHttpOptions []connecthttp.Option
-	httpHandlers       []httpo.HttpPatternHandler
-	httpMiddleware     []httpo.HttpMiddleware
+	config               *ConnectConfig
+	registerFuncs        []RegisterFunc
+	utilityRegisterFuncs []RegisterFunc
+	serverInterceptors   []connect.ServerInterceptor
+	connectHttpOptions   []connecthttp.Option
+	httpHandlers         []httpo.HttpPatternHandler
+	httpMiddleware       []httpo.HttpMiddleware
 
 	hostPort  string
 	rpcServer *connect.Server
@@ -164,9 +175,10 @@ func NewConnectServer(opts ...ConnectServerOption) (*ConnectServer, error) {
 	// get the host and port
 	srv.hostPort = addr.String()
 
-	// create the Connect server and register services
+	// create the Connect server and register services; utility services
+	// inspect the application services, so they are registered after them
 	srv.rpcServer = connect.NewServer(srv.serverInterceptors...)
-	for _, register := range srv.registerFuncs {
+	for _, register := range slices.Concat(srv.registerFuncs, srv.utilityRegisterFuncs) {
 		if register == nil {
 			continue
 		}

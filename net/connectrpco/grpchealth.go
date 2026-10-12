@@ -9,8 +9,8 @@ import (
 )
 
 // RegisterGrpcHealth registers the gRPC health service. It reports every
-// service already registered on the server as serving, so it must run after
-// the application services are registered.
+// service already registered on the server as serving, so pass it to
+// RegisterUtilityServices to run it after the application services.
 func RegisterGrpcHealth(server *connect.Server) {
 	services := slices.DeleteFunc(serviceNames(server), func(name string) bool {
 		// reflection is a utility service, not an application service

@@ -49,7 +49,10 @@ srv, err := connectrpco.NewConnectServer(
 	connectrpco.ServerInterceptors(interceptor),
 	connectrpco.RegisterServices(
 		func(s *connect.Server) { pingv1connect.RegisterPingServiceHandler(s, pingServer) },
-		connectrpco.RegisterGrpcHealth, // after the services it reports on
+	),
+	// registered after all services, regardless of option order
+	connectrpco.RegisterUtilityServices(
+		connectrpco.RegisterGrpcHealth,
 		connectrpco.RegisterGrpcReflect,
 	),
 )

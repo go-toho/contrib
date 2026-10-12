@@ -88,10 +88,8 @@ func NewConnectServer(
 	server, err := connectrpco.NewConnectServer(
 		connectrpco.WithConnectConfig(config),
 		connectrpco.ServerInterceptors(serverInterceptors...),
-		// utility services (health, reflection) inspect the application
-		// services, so they must be registered after them
 		connectrpco.RegisterServices(registerFuncs...),
-		connectrpco.RegisterServices(utilityRegisterFuncs...),
+		connectrpco.RegisterUtilityServices(utilityRegisterFuncs...),
 		connectrpco.ConnectHttpOptions(connectHttpOptions...),
 		connectrpco.HttpPatternHandlers(httpHandlers...),
 		connectrpco.HttpMiddleware(httpMiddleware...),

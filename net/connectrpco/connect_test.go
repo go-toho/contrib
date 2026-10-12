@@ -130,12 +130,28 @@ func TestConnectServer_HttpHandlersAndMiddleware(t *testing.T) {
 	assert.Equal(t, int32(2), middlewareCalls.Load())
 }
 
+func TestConnectServer_RegisterUtilityServices(t *testing.T) {
+	var procedures []string
+
+	_, err := NewConnectServer(
+		// passed before the application services on purpose
+		RegisterUtilityServices(func(server *connect.Server) {
+			for spec := range server.Specs() {
+				procedures = append(procedures, spec.Procedure)
+			}
+		}, nil),
+		RegisterServices(echotest.Register),
+	)
+	require.NoError(t, err)
+
+	assert.Equal(t, []string{echotest.Procedure}, procedures)
+}
+
 func TestRegisterGrpcHealth(t *testing.T) {
-	ts := newTestServer(t, RegisterServices(
-		echotest.Register,
-		RegisterGrpcReflect,
-		RegisterGrpcHealth,
-	))
+	ts := newTestServer(t,
+		RegisterUtilityServices(RegisterGrpcReflect, RegisterGrpcHealth),
+		RegisterServices(echotest.Register),
+	)
 
 	client := grpchealth.NewClient(connect.NewClient(connecthttp.NewTransport(http.DefaultClient, ts.URL)))
 
