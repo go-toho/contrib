@@ -63,7 +63,7 @@ on your services first. Then update the wiring:
 | `SupplyConnectHandlerOptions(connect.WithReadMaxBytes(n))` and other HTTP options | `SupplyHandlerOptions(connecthttp.WithReadMaxBytes(n))` |
 | `GroupConnectHandler` (plain `httpo.HttpPatternHandler`) | `GroupHttpHandler` / `SupplyHttpHandlers(...)` |
 | `GroupConnectHandlerOptions` | `GroupServerInterceptor` / `GroupHandlerOption` |
-| `GroupUtilityConnectHandler`, `GroupConnectServiceNames` | `GroupUtilityServiceRegistrar` (service names are read from the server) |
+| `GroupUtilityConnectHandler`, `GroupConnectServiceNames` | removed; use `WithGrpcHealthHandler` / `WithGrpcReflectHandler` (service names are read from the server) |
 | `NewGrpcHealthHandler(services, opts...)` | `NewGrpcHealthRegistrar()` |
 | `NewGrpcReflectHandler(services, opts...)` | `NewGrpcReflectRegistrar(opts...)` |
 

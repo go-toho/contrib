@@ -11,9 +11,9 @@ import (
 // typically by calling a generated Register<Service>Handler function.
 type ServiceRegistrar func(*connect.Server)
 
-// ServiceNames returns the fully-qualified names of the services registered
+// serviceNames returns the fully-qualified names of the services registered
 // on server, in registration order.
-func ServiceNames(server *connect.Server) []string {
+func serviceNames(server *connect.Server) []string {
 	var names []string
 	for spec := range server.Specs() {
 		// procedures have the form "/package.Service/Method"

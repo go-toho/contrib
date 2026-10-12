@@ -55,7 +55,7 @@ func TestServiceNames(t *testing.T) {
 	echotest.Register(server)
 	grpchealth.Register(server, grpchealth.NewStaticChecker())
 
-	assert.Equal(t, []string{echotest.ServiceName, grpchealth.HealthV1ServiceName}, ServiceNames(server))
+	assert.Equal(t, []string{echotest.ServiceName, grpchealth.HealthV1ServiceName}, serviceNames(server))
 }
 
 func TestConnectServer_ServiceRegistrars(t *testing.T) {
@@ -167,7 +167,7 @@ func TestGrpcHealthRegistrar_NoServices(t *testing.T) {
 	server := connect.NewServer()
 	NewGrpcHealthRegistrar()(server)
 
-	assert.Empty(t, ServiceNames(server))
+	assert.Empty(t, serviceNames(server))
 }
 
 func TestGrpcReflectRegistrar(t *testing.T) {

@@ -13,7 +13,7 @@ import (
 // must run after the application services are registered.
 func NewGrpcHealthRegistrar() ServiceRegistrar {
 	return func(server *connect.Server) {
-		services := slices.DeleteFunc(ServiceNames(server), func(name string) bool {
+		services := slices.DeleteFunc(serviceNames(server), func(name string) bool {
 			// reflection is a utility service, not an application service
 			return name == grpcreflect.ReflectV1ServiceName || name == grpcreflect.ReflectV1AlphaServiceName
 		})

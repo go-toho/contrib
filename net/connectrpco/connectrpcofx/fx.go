@@ -16,6 +16,12 @@ import (
 	"github.com/go-toho/toho/pkg/fxtags"
 )
 
+const (
+	// groupUtilityServiceRegistrar holds utility services (health,
+	// reflection), registered after the application services.
+	groupUtilityServiceRegistrar = "connectrpcofx.UtilityServiceRegistrar"
+)
+
 var Module = fx.Module("connectrpc",
 	provideConnectConfigPointer,
 	provideConnectConfig,
@@ -59,7 +65,7 @@ var (
 			fx.ParamTags(
 				fxtags.Named(connectrpco.NamedConnectConfig),
 				fxtags.Group(connectrpco.GroupServiceRegistrar),
-				fxtags.Group(connectrpco.GroupUtilityServiceRegistrar),
+				fxtags.Group(groupUtilityServiceRegistrar),
 				fxtags.Group(connectrpco.GroupServerInterceptor),
 				fxtags.Group(connectrpco.GroupHandlerOption),
 				fxtags.Group(connectrpco.GroupHttpHandler),
@@ -125,7 +131,7 @@ func NewConnectServer(
 var WithGrpcHealthHandler = fx.Provide(
 	fx.Annotate(
 		connectrpco.NewGrpcHealthRegistrar,
-		fx.ResultTags(fxtags.Group(connectrpco.GroupUtilityServiceRegistrar)),
+		fx.ResultTags(fxtags.Group(groupUtilityServiceRegistrar)),
 	),
 )
 
@@ -134,7 +140,7 @@ var WithGrpcReflectHandler = fx.Provide(
 		func() connectrpco.ServiceRegistrar {
 			return connectrpco.NewGrpcReflectRegistrar()
 		},
-		fx.ResultTags(fxtags.Group(connectrpco.GroupUtilityServiceRegistrar)),
+		fx.ResultTags(fxtags.Group(groupUtilityServiceRegistrar)),
 	),
 )
 
