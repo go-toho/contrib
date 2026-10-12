@@ -50,6 +50,24 @@ srv, err := connectrpco.NewConnectServer(
 )
 ```
 
+## Testing
+
+`connectrpcotest` starts a server with the same options as `NewConnectServer`
+and returns clients for it. It uses HTTP/2 without TLS, so streaming RPCs work:
+
+```go
+srv := connectrpcotest.NewServer(t,
+	connectrpco.ServerInterceptors(validate.NewServerInterceptor()),
+	connectrpco.ServiceRegistrars(func(s *connect.Server) {
+		pingv1connect.RegisterPingServiceHandler(s, pingServer)
+	}),
+)
+client := pingv1connect.NewPingServiceClient(srv.Client())
+```
+
+`srv.Client` accepts client interceptors. Use `srv.Transport(...)` for
+`connecthttp` client options, or `srv.HTTPClient()` for raw HTTP requests.
+
 ## Upgrading from the connect-go v1 version
 
 Regenerate your code with the v2 `protoc-gen-connect-go` and run
