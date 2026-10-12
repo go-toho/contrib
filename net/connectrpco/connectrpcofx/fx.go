@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"strings"
 
-	"connectrpc.com/connect"
+	"connectrpc.com/connect/v2"
+	"connectrpc.com/connect/v2/connecthttp"
 	"connectrpc.com/otelconnect"
 	"go.uber.org/fx"
 
@@ -16,15 +16,9 @@ import (
 	"github.com/go-toho/toho/pkg/fxtags"
 )
 
-const (
-	groupAllConnectHandlers = "connectrpcofx.AllConnectHandlers"
-)
-
 var Module = fx.Module("connectrpc",
 	provideConnectConfigPointer,
 	provideConnectConfig,
-	provideConnectServiceNames,
-	provideAllConnectHandlers,
 	invokeServer,
 )
 
@@ -59,43 +53,16 @@ var (
 		),
 	)
 
-	provideConnectServiceNames = fx.Provide(
-		fx.Annotate(
-			func(connectHandlers []httpo.HttpPatternHandler) []string {
-				var services []string
-				// extract service names
-				for _, handlers := range connectHandlers {
-					services = append(services, strings.Trim(handlers.Pattern, "/"))
-				}
-				return services
-			},
-			fx.ParamTags(fxtags.Group(connectrpco.GroupConnectHandler)),
-			fx.ResultTags(fxtags.GroupFlatten(connectrpco.GroupConnectServiceNames)),
-		),
-	)
-
-	provideAllConnectHandlers = fx.Provide(
-		fx.Annotate(
-			func(connectHandlers, utilityConnectHandlers []httpo.HttpPatternHandler) []httpo.HttpPatternHandler {
-				var handlers []httpo.HttpPatternHandler
-				handlers = append(handlers, connectHandlers...)
-				handlers = append(handlers, utilityConnectHandlers...)
-				return handlers
-			},
-			fx.ParamTags(
-				fxtags.Group(connectrpco.GroupConnectHandler),
-				fxtags.Group(connectrpco.GroupUtilityConnectHandler),
-			),
-			fx.ResultTags(fxtags.GroupFlatten(groupAllConnectHandlers)),
-		),
-	)
-
 	invokeServer = fx.Invoke(
 		fx.Annotate(
 			NewConnectServer,
 			fx.ParamTags(
 				fxtags.Named(connectrpco.NamedConnectConfig),
-				fxtags.Group(groupAllConnectHandlers),
+				fxtags.Group(connectrpco.GroupServiceRegistrar),
+				fxtags.Group(connectrpco.GroupUtilityServiceRegistrar),
+				fxtags.Group(connectrpco.GroupServerInterceptor),
+				fxtags.Group(connectrpco.GroupHandlerOption),
+				fxtags.Group(connectrpco.GroupHttpHandler),
 				fxtags.Group(connectrpco.GroupHttpMiddleware),
 			),
 		),
@@ -104,7 +71,11 @@ var (
 
 func NewConnectServer(
 	config connectrpco.ConnectConfig,
-	connectHandlers []httpo.HttpPatternHandler,
+	serviceRegistrars []connectrpco.ServiceRegistrar,
+	utilityServiceRegistrars []connectrpco.ServiceRegistrar,
+	serverInterceptors []connect.ServerInterceptor,
+	handlerOptions []connecthttp.Option,
+	httpHandlers []httpo.HttpPatternHandler,
 	httpMiddleware []httpo.HttpMiddleware,
 	log fx.Printer,
 	lifecycle fx.Lifecycle,
@@ -116,7 +87,13 @@ func NewConnectServer(
 
 	server, err := connectrpco.NewConnectServer(
 		connectrpco.WithConnectConfig(config),
-		connectrpco.HttpPatternHandlers(connectHandlers...),
+		connectrpco.ServerInterceptors(serverInterceptors...),
+		// utility services (health, reflection) inspect the application
+		// services, so they must be registered after them
+		connectrpco.ServiceRegistrars(serviceRegistrars...),
+		connectrpco.ServiceRegistrars(utilityServiceRegistrars...),
+		connectrpco.HandlerOptions(handlerOptions...),
+		connectrpco.HttpPatternHandlers(httpHandlers...),
 		connectrpco.HttpMiddleware(httpMiddleware...),
 	)
 	if err != nil {
@@ -147,23 +124,17 @@ func NewConnectServer(
 
 var WithGrpcHealthHandler = fx.Provide(
 	fx.Annotate(
-		connectrpco.NewGrpcHealthHandler,
-		fx.ParamTags(
-			fxtags.Group(connectrpco.GroupConnectServiceNames),
-			fxtags.Group(connectrpco.GroupConnectHandlerOptions),
-		),
-		fx.ResultTags(fxtags.GroupFlatten(connectrpco.GroupUtilityConnectHandler)),
+		connectrpco.NewGrpcHealthRegistrar,
+		fx.ResultTags(fxtags.Group(connectrpco.GroupUtilityServiceRegistrar)),
 	),
 )
 
 var WithGrpcReflectHandler = fx.Provide(
 	fx.Annotate(
-		connectrpco.NewGrpcReflectHandler,
-		fx.ParamTags(
-			fxtags.Group(connectrpco.GroupConnectServiceNames),
-			fxtags.Group(connectrpco.GroupConnectHandlerOptions),
-		),
-		fx.ResultTags(fxtags.GroupFlatten(connectrpco.GroupUtilityConnectHandler)),
+		func() connectrpco.ServiceRegistrar {
+			return connectrpco.NewGrpcReflectRegistrar()
+		},
+		fx.ResultTags(fxtags.Group(connectrpco.GroupUtilityServiceRegistrar)),
 	),
 )
 
@@ -175,45 +146,77 @@ var WithCorsHttpMiddleware = fx.Provide(
 	),
 )
 
-// WithOtelConnectInterceptor provides an interceptor configured with otelconnect options.
+// WithOtelConnectInterceptor provides a server interceptor configured with otelconnect options.
 var WithOtelConnectInterceptor = func(opts ...otelconnect.Option) fx.Option {
 	return fx.Provide(
 		fx.Annotate(
-			func() (connect.HandlerOption, error) {
-				otelInterceptor, err := otelconnect.NewInterceptor(opts...)
-				if err != nil {
-					return nil, err
-				}
-				return connect.WithInterceptors(otelInterceptor), nil
+			func() (connect.ServerInterceptor, error) {
+				return otelconnect.NewServerInterceptor(opts...)
 			},
-			fx.ResultTags(fxtags.Group(connectrpco.GroupConnectHandlerOptions)),
+			fx.ResultTags(fxtags.Group(connectrpco.GroupServerInterceptor)),
 		),
 	)
 }
 
-func SupplyConnectHandlerOptions(opts ...connect.HandlerOption) fx.Option {
+// ProvideServiceHandler registers a Connect service whose implementation is
+// resolved from the container, e.g.
+//
+//	ProvideServiceHandler(pingv1connect.RegisterPingServiceHandler)
+//
+// requires a pingv1connect.PingServiceHandler to be provided.
+func ProvideServiceHandler[T any](register func(*connect.Server, T)) fx.Option {
 	return fx.Provide(
 		fx.Annotate(
-			func() []connect.HandlerOption {
+			func(svc T) connectrpco.ServiceRegistrar {
+				return func(server *connect.Server) {
+					register(server, svc)
+				}
+			},
+			fx.ResultTags(fxtags.Group(connectrpco.GroupServiceRegistrar)),
+		),
+	)
+}
+
+func SupplyServiceRegistrars(registrars ...connectrpco.ServiceRegistrar) fx.Option {
+	return fx.Provide(
+		fx.Annotate(
+			func() []connectrpco.ServiceRegistrar {
+				return registrars
+			},
+			fx.ResultTags(fxtags.GroupFlatten(connectrpco.GroupServiceRegistrar)),
+		),
+	)
+}
+
+func SupplyServerInterceptors(interceptors ...connect.ServerInterceptor) fx.Option {
+	return fx.Provide(
+		fx.Annotate(
+			func() []connect.ServerInterceptor {
+				return interceptors
+			},
+			fx.ResultTags(fxtags.GroupFlatten(connectrpco.GroupServerInterceptor)),
+		),
+	)
+}
+
+func SupplyHandlerOptions(opts ...connecthttp.Option) fx.Option {
+	return fx.Provide(
+		fx.Annotate(
+			func() []connecthttp.Option {
 				return opts
 			},
-			fx.ResultTags(fxtags.GroupFlatten(connectrpco.GroupConnectHandlerOptions)),
+			fx.ResultTags(fxtags.GroupFlatten(connectrpco.GroupHandlerOption)),
 		),
 	)
 }
 
-func SupplyConnectHandler(fn func(opts ...connect.HandlerOption) (string, http.Handler)) fx.Option {
+func SupplyHttpHandlers(handlers ...httpo.HttpPatternHandler) fx.Option {
 	return fx.Provide(
 		fx.Annotate(
-			func(opts ...connect.HandlerOption) httpo.HttpPatternHandler {
-				path, handler := fn(opts...)
-				return httpo.HttpPatternHandler{
-					Pattern: path,
-					Handler: handler,
-				}
+			func() []httpo.HttpPatternHandler {
+				return handlers
 			},
-			fx.ParamTags(fxtags.Group(connectrpco.GroupConnectHandlerOptions)),
-			fx.ResultTags(fxtags.Group(connectrpco.GroupConnectHandler)),
+			fx.ResultTags(fxtags.GroupFlatten(connectrpco.GroupHttpHandler)),
 		),
 	)
 }

@@ -1,23 +1,26 @@
 package connectrpco
 
 import (
-	"connectrpc.com/connect"
-	"connectrpc.com/grpchealth"
+	"slices"
 
-	"github.com/go-toho/contrib/net/httpo"
+	"connectrpc.com/connect/v2"
+	"connectrpc.com/grpchealth/v2"
+	"connectrpc.com/grpcreflect/v2"
 )
 
-// NewGrpcHealthHandler creates a Connect gRPC health handler.
-func NewGrpcHealthHandler(services []string, options ...connect.HandlerOption) []httpo.HttpPatternHandler {
-	if len(services) == 0 {
-		return nil
-	}
+// NewGrpcHealthRegistrar creates a registrar for the gRPC health service.
+// It reports every service already registered on the server as serving, so it
+// must run after the application services are registered.
+func NewGrpcHealthRegistrar() ServiceRegistrar {
+	return func(server *connect.Server) {
+		services := slices.DeleteFunc(ServiceNames(server), func(name string) bool {
+			// reflection is a utility service, not an application service
+			return name == grpcreflect.ReflectV1ServiceName || name == grpcreflect.ReflectV1AlphaServiceName
+		})
+		if len(services) == 0 {
+			return
+		}
 
-	checker := grpchealth.NewStaticChecker(services...)
-
-	pattern, handler := grpchealth.NewHandler(checker, options...)
-
-	return []httpo.HttpPatternHandler{
-		{Pattern: pattern, Handler: handler},
+		grpchealth.Register(server, grpchealth.NewStaticChecker(services...))
 	}
 }

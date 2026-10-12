@@ -2,10 +2,11 @@ package connectrpco
 
 const (
 	NamedConnectConfig  = "connectrpco.ConnectConfig"
-	GroupConnectHandler = "connectrpco.ConnectHandler"
+	GroupHttpHandler    = "connectrpco.HttpHandler"
 	GroupHttpMiddleware = "connectrpco.HttpMiddleware"
 
-	GroupUtilityConnectHandler = "connectrpco.UtilityConnectHandler"
-	GroupConnectServiceNames   = "connectrpco.ConnectServiceNames"
-	GroupConnectHandlerOptions = "connectrpco.ConnectHandlerOptions"
+	GroupServiceRegistrar        = "connectrpco.ServiceRegistrar"
+	GroupUtilityServiceRegistrar = "connectrpco.UtilityServiceRegistrar"
+	GroupServerInterceptor       = "connectrpco.ServerInterceptor"
+	GroupHandlerOption           = "connectrpco.HandlerOption"
 )
