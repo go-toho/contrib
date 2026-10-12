@@ -67,7 +67,7 @@ var (
 				fxtags.Group(connectrpco.GroupServiceRegistrar),
 				fxtags.Group(groupUtilityServiceRegistrar),
 				fxtags.Group(connectrpco.GroupServerInterceptor),
-				fxtags.Group(connectrpco.GroupHandlerOption),
+				fxtags.Group(connectrpco.GroupConnectHttpOption),
 				fxtags.Group(connectrpco.GroupHttpHandler),
 				fxtags.Group(connectrpco.GroupHttpMiddleware),
 			),
@@ -80,7 +80,7 @@ func NewConnectServer(
 	serviceRegistrars []connectrpco.ServiceRegistrar,
 	utilityServiceRegistrars []connectrpco.ServiceRegistrar,
 	serverInterceptors []connect.ServerInterceptor,
-	handlerOptions []connecthttp.Option,
+	connectHttpOptions []connecthttp.Option,
 	httpHandlers []httpo.HttpPatternHandler,
 	httpMiddleware []httpo.HttpMiddleware,
 	log fx.Printer,
@@ -98,7 +98,7 @@ func NewConnectServer(
 		// services, so they must be registered after them
 		connectrpco.ServiceRegistrars(serviceRegistrars...),
 		connectrpco.ServiceRegistrars(utilityServiceRegistrars...),
-		connectrpco.HandlerOptions(handlerOptions...),
+		connectrpco.ConnectHttpOptions(connectHttpOptions...),
 		connectrpco.HttpPatternHandlers(httpHandlers...),
 		connectrpco.HttpMiddleware(httpMiddleware...),
 	)
@@ -205,13 +205,13 @@ func SupplyServerInterceptors(interceptors ...connect.ServerInterceptor) fx.Opti
 	)
 }
 
-func SupplyHandlerOptions(opts ...connecthttp.Option) fx.Option {
+func SupplyConnectHttpOptions(opts ...connecthttp.Option) fx.Option {
 	return fx.Provide(
 		fx.Annotate(
 			func() []connecthttp.Option {
 				return opts
 			},
-			fx.ResultTags(fxtags.GroupFlatten(connectrpco.GroupHandlerOption)),
+			fx.ResultTags(fxtags.GroupFlatten(connectrpco.GroupConnectHttpOption)),
 		),
 	)
 }

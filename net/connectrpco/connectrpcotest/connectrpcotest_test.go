@@ -62,12 +62,12 @@ func TestServer_Streaming(t *testing.T) {
 	assert.Contains(t, services, protoreflect.FullName(echotest.ServiceName))
 }
 
-func TestServer_HTTPClient(t *testing.T) {
+func TestServer_HttpClient(t *testing.T) {
 	srv := connectrpcotest.NewServer(t,
 		connectrpco.ServiceRegistrars(echotest.Register),
 	)
 
-	res, err := srv.HTTPClient().Post(srv.URL+echotest.Procedure, "application/json", strings.NewReader(`"hello"`))
+	res, err := srv.HttpClient().Post(srv.URL+echotest.Procedure, "application/json", strings.NewReader(`"hello"`))
 	require.NoError(t, err)
 	defer res.Body.Close()
 

@@ -99,7 +99,7 @@ func TestModule(t *testing.T) {
 				return next(ctx, spec, stream)
 			}
 		}),
-		SupplyHandlerOptions(connecthttp.WithReadMaxBytes(64)),
+		SupplyConnectHttpOptions(connecthttp.WithReadMaxBytes(64)),
 		SupplyHttpHandlers(httpo.HttpPatternHandler{
 			Pattern: "/plain",
 			Handler: http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {

@@ -7,5 +7,5 @@ const (
 
 	GroupServiceRegistrar  = "connectrpco.ServiceRegistrar"
 	GroupServerInterceptor = "connectrpco.ServerInterceptor"
-	GroupHandlerOption     = "connectrpco.HandlerOption"
+	GroupConnectHttpOption = "connectrpco.ConnectHttpOption"
 )

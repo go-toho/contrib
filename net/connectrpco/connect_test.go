@@ -90,10 +90,10 @@ func TestConnectServer_ServerInterceptors(t *testing.T) {
 	}, calls)
 }
 
-func TestConnectServer_HandlerOptions(t *testing.T) {
+func TestConnectServer_ConnectHttpOptions(t *testing.T) {
 	ts := newTestServer(t,
 		ServiceRegistrars(echotest.Register),
-		HandlerOptions(connecthttp.WithReadMaxBytes(8)),
+		ConnectHttpOptions(connecthttp.WithReadMaxBytes(8)),
 	)
 
 	status, body := echo(t, ts.URL, `"this message is too long"`)

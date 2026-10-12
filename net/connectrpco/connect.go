@@ -93,11 +93,11 @@ func ServerInterceptors(interceptors ...connect.ServerInterceptor) ConnectServer
 	}
 }
 
-// HandlerOptions with Connect HTTP handler options, such as read limits or
-// compression settings.
-func HandlerOptions(options ...connecthttp.Option) ConnectServerOption {
+// ConnectHttpOptions with Connect HTTP transport options, such as read limits
+// or compression settings. They apply to every registered service.
+func ConnectHttpOptions(options ...connecthttp.Option) ConnectServerOption {
 	return func(s *ConnectServer) {
-		s.handlerOptions = append(s.handlerOptions, options...)
+		s.connectHttpOptions = append(s.connectHttpOptions, options...)
 	}
 }
 
@@ -132,7 +132,7 @@ type ConnectServer struct {
 	config             *ConnectConfig
 	serviceRegistrars  []ServiceRegistrar
 	serverInterceptors []connect.ServerInterceptor
-	handlerOptions     []connecthttp.Option
+	connectHttpOptions []connecthttp.Option
 	httpHandlers       []httpo.HttpPatternHandler
 	httpMiddleware     []httpo.HttpMiddleware
 
@@ -177,7 +177,7 @@ func NewConnectServer(opts ...ConnectServerOption) (*ConnectServer, error) {
 	srv.mux = http.NewServeMux()
 
 	// add connect routes
-	connecthttp.Mount(srv.mux, srv.rpcServer, srv.handlerOptions...)
+	connecthttp.Mount(srv.mux, srv.rpcServer, srv.connectHttpOptions...)
 
 	// add plain HTTP handlers
 	for _, handler := range srv.httpHandlers {

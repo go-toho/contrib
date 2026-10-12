@@ -25,7 +25,7 @@ fx.New(
 	// server-wide interceptors and HTTP handler options
 	connectrpcofx.WithOtelConnectInterceptor(),
 	connectrpcofx.SupplyServerInterceptors(validate.NewServerInterceptor()),
-	connectrpcofx.SupplyHandlerOptions(connecthttp.WithReadMaxBytes(16<<20)),
+	connectrpcofx.SupplyConnectHttpOptions(connecthttp.WithReadMaxBytes(16<<20)),
 
 	// plain HTTP handlers and middleware
 	connectrpcofx.SupplyHttpHandlers(httpo.HttpPatternHandler{Pattern: "/healthz", Handler: healthz}),
@@ -66,7 +66,7 @@ client := pingv1connect.NewPingServiceClient(srv.Client())
 ```
 
 `srv.Client` accepts client interceptors. Use `srv.Transport(...)` for
-`connecthttp` client options, or `srv.HTTPClient()` for raw HTTP requests.
+`connecthttp` client options, or `srv.HttpClient()` for raw HTTP requests.
 
 ## Upgrading from the connect-go v1 version
 
@@ -78,9 +78,9 @@ on your services first. Then update the wiring:
 | --- | --- |
 | `SupplyConnectHandler(pingv1connect.NewPingServiceHandler(...))` | `ProvideServiceHandler(pingv1connect.RegisterPingServiceHandler)` or `SupplyServiceRegistrars(...)` |
 | `SupplyConnectHandlerOptions(connect.WithInterceptors(i))` | `SupplyServerInterceptors(i)` |
-| `SupplyConnectHandlerOptions(connect.WithReadMaxBytes(n))` and other HTTP options | `SupplyHandlerOptions(connecthttp.WithReadMaxBytes(n))` |
+| `SupplyConnectHandlerOptions(connect.WithReadMaxBytes(n))` and other HTTP options | `SupplyConnectHttpOptions(connecthttp.WithReadMaxBytes(n))` |
 | `GroupConnectHandler` (plain `httpo.HttpPatternHandler`) | `GroupHttpHandler` / `SupplyHttpHandlers(...)` |
-| `GroupConnectHandlerOptions` | `GroupServerInterceptor` / `GroupHandlerOption` |
+| `GroupConnectHandlerOptions` | `GroupServerInterceptor` / `GroupConnectHttpOption` |
 | `GroupUtilityConnectHandler`, `GroupConnectServiceNames` | removed; use `WithGrpcHealthHandler` / `WithGrpcReflectHandler` (service names are read from the server) |
 | `NewGrpcHealthHandler(services, opts...)` | `NewGrpcHealthRegistrar()` |
 | `NewGrpcReflectHandler(services, opts...)` | `NewGrpcReflectRegistrar(opts...)` |
