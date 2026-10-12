@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"slices"
 	"time"
 
+	"connectrpc.com/connect/v2"
+	"connectrpc.com/connect/v2/connecthttp"
 	"github.com/creasty/defaults"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -75,20 +78,53 @@ func MaxHeaderBytes(bytes int) ConnectServerOption {
 	}
 }
 
-// Handle registers a new handler for a given pattern.
+// RegisterServices registers Connect services. The functions run in the order
+// they are given, after all server interceptors are known.
+func RegisterServices(fns ...RegisterFunc) ConnectServerOption {
+	return func(s *ConnectServer) {
+		s.registerFuncs = append(s.registerFuncs, fns...)
+	}
+}
+
+// RegisterUtilityServices registers utility services, such as health and
+// reflection. They run after all services passed to RegisterServices,
+// regardless of option order, so they can inspect the registered services.
+func RegisterUtilityServices(fns ...RegisterFunc) ConnectServerOption {
+	return func(s *ConnectServer) {
+		s.utilityRegisterFuncs = append(s.utilityRegisterFuncs, fns...)
+	}
+}
+
+// ServerInterceptors with Connect server interceptors. Interceptors apply to
+// every registered service; the first one wraps the outermost call.
+func ServerInterceptors(interceptors ...connect.ServerInterceptor) ConnectServerOption {
+	return func(s *ConnectServer) {
+		s.serverInterceptors = append(s.serverInterceptors, interceptors...)
+	}
+}
+
+// ConnectHttpOptions with Connect HTTP transport options, such as read limits
+// or compression settings. They apply to every registered service.
+func ConnectHttpOptions(options ...connecthttp.Option) ConnectServerOption {
+	return func(s *ConnectServer) {
+		s.connectHttpOptions = append(s.connectHttpOptions, options...)
+	}
+}
+
+// Handle registers a new plain HTTP handler for a given pattern.
 func Handle(pattern string, handler http.Handler) ConnectServerOption {
 	return func(s *ConnectServer) {
-		s.connectHandlers = append(s.connectHandlers, httpo.HttpPatternHandler{
+		s.httpHandlers = append(s.httpHandlers, httpo.HttpPatternHandler{
 			Pattern: pattern,
 			Handler: handler,
 		})
 	}
 }
 
-// HttpPatternHandlers registers handlers.
+// HttpPatternHandlers registers plain HTTP handlers.
 func HttpPatternHandlers(patternHandlers ...httpo.HttpPatternHandler) ConnectServerOption {
 	return func(s *ConnectServer) {
-		s.connectHandlers = append(s.connectHandlers, patternHandlers...)
+		s.httpHandlers = append(s.httpHandlers, patternHandlers...)
 	}
 }
 
@@ -103,13 +139,18 @@ func HttpMiddleware(middleware ...httpo.HttpMiddleware) ConnectServerOption {
 type ConnectServer struct {
 	*http.Server
 
-	config          *ConnectConfig
-	connectHandlers []httpo.HttpPatternHandler
-	httpMiddleware  []httpo.HttpMiddleware
+	config               *ConnectConfig
+	registerFuncs        []RegisterFunc
+	utilityRegisterFuncs []RegisterFunc
+	serverInterceptors   []connect.ServerInterceptor
+	connectHttpOptions   []connecthttp.Option
+	httpHandlers         []httpo.HttpPatternHandler
+	httpMiddleware       []httpo.HttpMiddleware
 
-	hostPort string
-	mux      *http.ServeMux
-	handler  http.Handler
+	hostPort  string
+	rpcServer *connect.Server
+	mux       *http.ServeMux
+	handler   http.Handler
 }
 
 func NewConnectServer(opts ...ConnectServerOption) (*ConnectServer, error) {
@@ -134,14 +175,25 @@ func NewConnectServer(opts ...ConnectServerOption) (*ConnectServer, error) {
 	// get the host and port
 	srv.hostPort = addr.String()
 
+	// create the Connect server and register services; utility services
+	// inspect the application services, so they are registered after them
+	srv.rpcServer = connect.NewServer(srv.serverInterceptors...)
+	for _, register := range slices.Concat(srv.registerFuncs, srv.utilityRegisterFuncs) {
+		if register == nil {
+			continue
+		}
+		register(srv.rpcServer)
+	}
+
 	// create a new mux
 	srv.mux = http.NewServeMux()
 
-	// add connect handlers
-	if len(srv.connectHandlers) > 0 {
-		for _, handler := range srv.connectHandlers {
-			srv.mux.Handle(handler.Pattern, handler.Handler)
-		}
+	// add connect routes
+	connecthttp.Mount(srv.mux, srv.rpcServer, srv.connectHttpOptions...)
+
+	// add plain HTTP handlers
+	for _, handler := range srv.httpHandlers {
+		srv.mux.Handle(handler.Pattern, handler.Handler)
 	}
 
 	// extract the handler from the mux
@@ -174,4 +226,10 @@ func NewConnectServer(opts ...ConnectServerOption) (*ConnectServer, error) {
 	}
 
 	return srv, nil
+}
+
+// RPCServer returns the underlying Connect server, e.g. for use with an
+// in-process transport in tests.
+func (s *ConnectServer) RPCServer() *connect.Server {
+	return s.rpcServer
 }
