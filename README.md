@@ -23,7 +23,7 @@ Install the package or packages your application imports.
 | `config/vipero` | Load typed config with Viper, defaults, env binding, and mapstructure decoding. |
 | `log/zapo` | Build Zap and sugared Zap loggers from Toho logger config. |
 | `telemetry/prometheuso` | Prometheus registry and HTTP handler helpers. |
-| `net/connectrpco` | ConnectRPC server helpers, health, reflection, auth, and CORS support. |
+| `net/connectrpco` | ConnectRPC (connect-go v2) server helpers, health, reflection, auth, and CORS support. |
 | `middleware/corso` | CORS config and middleware helpers. |
 | `validation/validatoro` | `go-playground/validator` provider. |
 
