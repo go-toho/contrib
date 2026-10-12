@@ -7,9 +7,9 @@ import (
 	"connectrpc.com/connect/v2"
 )
 
-// ServiceRegistrar registers one or more Connect services on a server,
-// typically by calling a generated Register<Service>Handler function.
-type ServiceRegistrar func(*connect.Server)
+// RegisterFunc registers one or more Connect services on a server, typically
+// by calling a generated Register<Service>Handler function.
+type RegisterFunc func(*connect.Server)
 
 // serviceNames returns the fully-qualified names of the services registered
 // on server, in registration order.

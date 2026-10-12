@@ -58,8 +58,8 @@ func TestServiceNames(t *testing.T) {
 	assert.Equal(t, []string{echotest.ServiceName, grpchealth.HealthV1ServiceName}, serviceNames(server))
 }
 
-func TestConnectServer_ServiceRegistrars(t *testing.T) {
-	ts := newTestServer(t, ServiceRegistrars(echotest.Register, nil))
+func TestConnectServer_RegisterServices(t *testing.T) {
+	ts := newTestServer(t, RegisterServices(echotest.Register, nil))
 
 	status, body := echo(t, ts.URL, `"hello"`)
 	assert.Equal(t, http.StatusOK, status)
@@ -78,7 +78,7 @@ func TestConnectServer_ServerInterceptors(t *testing.T) {
 	}
 
 	ts := newTestServer(t,
-		ServiceRegistrars(echotest.Register),
+		RegisterServices(echotest.Register),
 		ServerInterceptors(interceptor("first"), interceptor("second")),
 	)
 
@@ -92,7 +92,7 @@ func TestConnectServer_ServerInterceptors(t *testing.T) {
 
 func TestConnectServer_ConnectHttpOptions(t *testing.T) {
 	ts := newTestServer(t,
-		ServiceRegistrars(echotest.Register),
+		RegisterServices(echotest.Register),
 		ConnectHttpOptions(connecthttp.WithReadMaxBytes(8)),
 	)
 
@@ -105,7 +105,7 @@ func TestConnectServer_HttpHandlersAndMiddleware(t *testing.T) {
 	var middlewareCalls atomic.Int32
 
 	ts := newTestServer(t,
-		ServiceRegistrars(echotest.Register),
+		RegisterServices(echotest.Register),
 		Handle("/plain", http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			_, _ = io.WriteString(w, "plain")
 		})),
@@ -130,11 +130,11 @@ func TestConnectServer_HttpHandlersAndMiddleware(t *testing.T) {
 	assert.Equal(t, int32(2), middlewareCalls.Load())
 }
 
-func TestGrpcHealthRegistrar(t *testing.T) {
-	ts := newTestServer(t, ServiceRegistrars(
+func TestRegisterGrpcHealth(t *testing.T) {
+	ts := newTestServer(t, RegisterServices(
 		echotest.Register,
-		NewGrpcReflectRegistrar(),
-		NewGrpcHealthRegistrar(),
+		RegisterGrpcReflect,
+		RegisterGrpcHealth,
 	))
 
 	client := grpchealth.NewClient(connect.NewClient(connecthttp.NewTransport(http.DefaultClient, ts.URL)))
@@ -163,16 +163,16 @@ func TestGrpcHealthRegistrar(t *testing.T) {
 	}
 }
 
-func TestGrpcHealthRegistrar_NoServices(t *testing.T) {
+func TestRegisterGrpcHealth_NoServices(t *testing.T) {
 	server := connect.NewServer()
-	NewGrpcHealthRegistrar()(server)
+	RegisterGrpcHealth(server)
 
 	assert.Empty(t, serviceNames(server))
 }
 
-func TestGrpcReflectRegistrar(t *testing.T) {
-	ts := newTestServer(t, ServiceRegistrars(
-		NewGrpcReflectRegistrar(),
+func TestRegisterGrpcReflect(t *testing.T) {
+	ts := newTestServer(t, RegisterServices(
+		RegisterGrpcReflect,
 		echotest.Register,
 	))
 

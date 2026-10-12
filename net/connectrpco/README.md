@@ -4,7 +4,7 @@ ConnectRPC server helpers built on [connect-go v2](https://github.com/connectrpc
 with an [fx](https://github.com/uber-go/fx) module in `connectrpcofx`.
 
 The server owns a single `*connect.Server`. Services are added through
-`ServiceRegistrar` functions, the server is mounted on an `http.ServeMux` with
+`RegisterFunc` functions, the server is mounted on an `http.ServeMux` with
 `connecthttp.Mount`, and the result is served over h2c so gRPC clients work
 without TLS.
 
@@ -42,10 +42,10 @@ If ordering matters, supply them together in one `SupplyServerInterceptors` call
 srv, err := connectrpco.NewConnectServer(
 	connectrpco.Address(":8080"),
 	connectrpco.ServerInterceptors(interceptor),
-	connectrpco.ServiceRegistrars(
+	connectrpco.RegisterServices(
 		func(s *connect.Server) { pingv1connect.RegisterPingServiceHandler(s, pingServer) },
-		connectrpco.NewGrpcHealthRegistrar(), // after the services it reports on
-		connectrpco.NewGrpcReflectRegistrar(),
+		connectrpco.RegisterGrpcHealth, // after the services it reports on
+		connectrpco.RegisterGrpcReflect,
 	),
 )
 ```
@@ -58,7 +58,7 @@ and returns clients for it. It uses HTTP/2 without TLS, so streaming RPCs work:
 ```go
 srv := connectrpcotest.NewServer(t,
 	connectrpco.ServerInterceptors(validate.NewServerInterceptor()),
-	connectrpco.ServiceRegistrars(func(s *connect.Server) {
+	connectrpco.RegisterServices(func(s *connect.Server) {
 		pingv1connect.RegisterPingServiceHandler(s, pingServer)
 	}),
 )
@@ -76,14 +76,14 @@ on your services first. Then update the wiring:
 
 | v1 | v2 |
 | --- | --- |
-| `SupplyConnectHandler(pingv1connect.NewPingServiceHandler(...))` | `ProvideServiceHandler(pingv1connect.RegisterPingServiceHandler)` or `SupplyServiceRegistrars(...)` |
+| `SupplyConnectHandler(pingv1connect.NewPingServiceHandler(...))` | `ProvideServiceHandler(pingv1connect.RegisterPingServiceHandler)` or `SupplyRegisterFuncs(...)` |
 | `SupplyConnectHandlerOptions(connect.WithInterceptors(i))` | `SupplyServerInterceptors(i)` |
 | `SupplyConnectHandlerOptions(connect.WithReadMaxBytes(n))` and other HTTP options | `SupplyConnectHttpOptions(connecthttp.WithReadMaxBytes(n))` |
 | `GroupConnectHandler` (plain `httpo.HttpPatternHandler`) | `GroupHttpHandler` / `SupplyHttpHandlers(...)` |
 | `GroupConnectHandlerOptions` | `GroupServerInterceptor` / `GroupConnectHttpOption` |
 | `GroupUtilityConnectHandler`, `GroupConnectServiceNames` | removed; use `WithGrpcHealthHandler` / `WithGrpcReflectHandler` (service names are read from the server) |
-| `NewGrpcHealthHandler(services, opts...)` | `NewGrpcHealthRegistrar()` |
-| `NewGrpcReflectHandler(services, opts...)` | `NewGrpcReflectRegistrar(opts...)` |
+| `NewGrpcHealthHandler(services, opts...)` | `RegisterGrpcHealth` |
+| `NewGrpcReflectHandler(services, opts...)` | `RegisterGrpcReflect`, or `grpcreflect.Register(server, opts...)` for options |
 
 Behavior changes:
 

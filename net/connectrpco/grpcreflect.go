@@ -5,10 +5,9 @@ import (
 	"connectrpc.com/grpcreflect/v2"
 )
 
-// NewGrpcReflectRegistrar creates a registrar for the gRPC reflection service.
-// By default, reflection describes all services registered on the server.
-func NewGrpcReflectRegistrar(options ...grpcreflect.Option) ServiceRegistrar {
-	return func(server *connect.Server) {
-		grpcreflect.Register(server, options...)
-	}
+// RegisterGrpcReflect registers the gRPC reflection service, which describes
+// all services registered on the server. For custom reflection options, call
+// grpcreflect.Register directly.
+func RegisterGrpcReflect(server *connect.Server) {
+	grpcreflect.Register(server)
 }

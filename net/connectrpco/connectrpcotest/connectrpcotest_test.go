@@ -24,7 +24,7 @@ func TestServer_Client(t *testing.T) {
 	var serverCalls, clientCalls int
 
 	srv := connectrpcotest.NewServer(t,
-		connectrpco.ServiceRegistrars(echotest.Register, connectrpco.NewGrpcHealthRegistrar()),
+		connectrpco.RegisterServices(echotest.Register, connectrpco.RegisterGrpcHealth),
 		connectrpco.ServerInterceptors(func(next connect.ServerFunc) connect.ServerFunc {
 			return func(ctx context.Context, spec connect.Spec, stream connect.ServerStream) error {
 				serverCalls++
@@ -49,7 +49,7 @@ func TestServer_Client(t *testing.T) {
 
 func TestServer_Streaming(t *testing.T) {
 	srv := connectrpcotest.NewServer(t,
-		connectrpco.ServiceRegistrars(echotest.Register, connectrpco.NewGrpcReflectRegistrar()),
+		connectrpco.RegisterServices(echotest.Register, connectrpco.RegisterGrpcReflect),
 	)
 
 	// reflection is a bidirectional stream, which requires HTTP/2
@@ -64,7 +64,7 @@ func TestServer_Streaming(t *testing.T) {
 
 func TestServer_HttpClient(t *testing.T) {
 	srv := connectrpcotest.NewServer(t,
-		connectrpco.ServiceRegistrars(echotest.Register),
+		connectrpco.RegisterServices(echotest.Register),
 	)
 
 	res, err := srv.HttpClient().Post(srv.URL+echotest.Procedure, "application/json", strings.NewReader(`"hello"`))

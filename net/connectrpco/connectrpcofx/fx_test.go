@@ -153,7 +153,7 @@ func TestModule_Disabled(t *testing.T) {
 
 	startApp(t,
 		connectrpco.ConnectConfig{Enabled: false, Addr: addr},
-		SupplyServiceRegistrars(echotest.Register),
+		SupplyRegisterFuncs(echotest.Register),
 	)
 
 	_, err := http.Get("http://" + addr + "/")

@@ -77,11 +77,11 @@ func MaxHeaderBytes(bytes int) ConnectServerOption {
 	}
 }
 
-// ServiceRegistrars registers Connect services. Registrars run in the order
+// RegisterServices registers Connect services. The functions run in the order
 // they are given, after all server interceptors are known.
-func ServiceRegistrars(registrars ...ServiceRegistrar) ConnectServerOption {
+func RegisterServices(fns ...RegisterFunc) ConnectServerOption {
 	return func(s *ConnectServer) {
-		s.serviceRegistrars = append(s.serviceRegistrars, registrars...)
+		s.registerFuncs = append(s.registerFuncs, fns...)
 	}
 }
 
@@ -130,7 +130,7 @@ type ConnectServer struct {
 	*http.Server
 
 	config             *ConnectConfig
-	serviceRegistrars  []ServiceRegistrar
+	registerFuncs      []RegisterFunc
 	serverInterceptors []connect.ServerInterceptor
 	connectHttpOptions []connecthttp.Option
 	httpHandlers       []httpo.HttpPatternHandler
@@ -166,7 +166,7 @@ func NewConnectServer(opts ...ConnectServerOption) (*ConnectServer, error) {
 
 	// create the Connect server and register services
 	srv.rpcServer = connect.NewServer(srv.serverInterceptors...)
-	for _, register := range srv.serviceRegistrars {
+	for _, register := range srv.registerFuncs {
 		if register == nil {
 			continue
 		}

@@ -17,9 +17,9 @@ import (
 )
 
 const (
-	// groupUtilityServiceRegistrar holds utility services (health,
-	// reflection), registered after the application services.
-	groupUtilityServiceRegistrar = "connectrpcofx.UtilityServiceRegistrar"
+	// groupUtilityRegisterFunc holds utility services (health, reflection),
+	// registered after the application services.
+	groupUtilityRegisterFunc = "connectrpcofx.UtilityRegisterFunc"
 )
 
 var Module = fx.Module("connectrpc",
@@ -64,8 +64,8 @@ var (
 			NewConnectServer,
 			fx.ParamTags(
 				fxtags.Named(connectrpco.NamedConnectConfig),
-				fxtags.Group(connectrpco.GroupServiceRegistrar),
-				fxtags.Group(groupUtilityServiceRegistrar),
+				fxtags.Group(connectrpco.GroupRegisterFunc),
+				fxtags.Group(groupUtilityRegisterFunc),
 				fxtags.Group(connectrpco.GroupServerInterceptor),
 				fxtags.Group(connectrpco.GroupConnectHttpOption),
 				fxtags.Group(connectrpco.GroupHttpHandler),
@@ -77,8 +77,8 @@ var (
 
 func NewConnectServer(
 	config connectrpco.ConnectConfig,
-	serviceRegistrars []connectrpco.ServiceRegistrar,
-	utilityServiceRegistrars []connectrpco.ServiceRegistrar,
+	registerFuncs []connectrpco.RegisterFunc,
+	utilityRegisterFuncs []connectrpco.RegisterFunc,
 	serverInterceptors []connect.ServerInterceptor,
 	connectHttpOptions []connecthttp.Option,
 	httpHandlers []httpo.HttpPatternHandler,
@@ -96,8 +96,8 @@ func NewConnectServer(
 		connectrpco.ServerInterceptors(serverInterceptors...),
 		// utility services (health, reflection) inspect the application
 		// services, so they must be registered after them
-		connectrpco.ServiceRegistrars(serviceRegistrars...),
-		connectrpco.ServiceRegistrars(utilityServiceRegistrars...),
+		connectrpco.RegisterServices(registerFuncs...),
+		connectrpco.RegisterServices(utilityRegisterFuncs...),
 		connectrpco.ConnectHttpOptions(connectHttpOptions...),
 		connectrpco.HttpPatternHandlers(httpHandlers...),
 		connectrpco.HttpMiddleware(httpMiddleware...),
@@ -130,17 +130,19 @@ func NewConnectServer(
 
 var WithGrpcHealthHandler = fx.Provide(
 	fx.Annotate(
-		connectrpco.NewGrpcHealthRegistrar,
-		fx.ResultTags(fxtags.Group(groupUtilityServiceRegistrar)),
+		func() connectrpco.RegisterFunc {
+			return connectrpco.RegisterGrpcHealth
+		},
+		fx.ResultTags(fxtags.Group(groupUtilityRegisterFunc)),
 	),
 )
 
 var WithGrpcReflectHandler = fx.Provide(
 	fx.Annotate(
-		func() connectrpco.ServiceRegistrar {
-			return connectrpco.NewGrpcReflectRegistrar()
+		func() connectrpco.RegisterFunc {
+			return connectrpco.RegisterGrpcReflect
 		},
-		fx.ResultTags(fxtags.Group(groupUtilityServiceRegistrar)),
+		fx.ResultTags(fxtags.Group(groupUtilityRegisterFunc)),
 	),
 )
 
@@ -173,23 +175,23 @@ var WithOtelConnectInterceptor = func(opts ...otelconnect.Option) fx.Option {
 func ProvideServiceHandler[T any](register func(*connect.Server, T)) fx.Option {
 	return fx.Provide(
 		fx.Annotate(
-			func(svc T) connectrpco.ServiceRegistrar {
+			func(svc T) connectrpco.RegisterFunc {
 				return func(server *connect.Server) {
 					register(server, svc)
 				}
 			},
-			fx.ResultTags(fxtags.Group(connectrpco.GroupServiceRegistrar)),
+			fx.ResultTags(fxtags.Group(connectrpco.GroupRegisterFunc)),
 		),
 	)
 }
 
-func SupplyServiceRegistrars(registrars ...connectrpco.ServiceRegistrar) fx.Option {
+func SupplyRegisterFuncs(fns ...connectrpco.RegisterFunc) fx.Option {
 	return fx.Provide(
 		fx.Annotate(
-			func() []connectrpco.ServiceRegistrar {
-				return registrars
+			func() []connectrpco.RegisterFunc {
+				return fns
 			},
-			fx.ResultTags(fxtags.GroupFlatten(connectrpco.GroupServiceRegistrar)),
+			fx.ResultTags(fxtags.GroupFlatten(connectrpco.GroupRegisterFunc)),
 		),
 	)
 }
