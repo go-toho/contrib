@@ -48,7 +48,7 @@ that mutates the Connect server can run after HTTP routes have been installed.
 Separate HTTP options from interceptors:
 
 ```go
-connectrpcofx.SupplyConnectHandlerOptions(connecthttp.WithReadMaxBytes(4 << 20))
+connectrpcofx.SupplyConnectHandlerOptions(connecthttp.WithReadMaxBytes(8 << 20))
 connectrpcofx.SupplyConnectInterceptors(authInterceptor, loggingInterceptor)
 connectrpcofx.WithOtelConnectInterceptor(otelconnect.WithTracerProvider(provider))
 ```
@@ -73,7 +73,7 @@ connectrpco.RegisterGrpcHealthHandler(rpcServer, services)
 connectrpco.RegisterGrpcReflectHandler(rpcServer, services)
 
 server, err := connectrpco.NewConnectServer(
-    connectrpco.WithConnectServer(rpcServer, connecthttp.WithReadMaxBytes(4 << 20)),
+    connectrpco.WithConnectServer(rpcServer, connecthttp.WithReadMaxBytes(8 << 20)),
     connectrpco.HttpMiddleware(middleware...),
 )
 ```
@@ -109,8 +109,9 @@ only, as before; health checks use the same application service list.
 
 ## Message sizes
 
-The contrib HTTP wrapper preserves v1's unlimited request size by default.
-Connect v2 itself defaults to 4 MiB. Set `connecthttp.WithReadMaxBytes` through
-`WithConnectServer` or `SupplyConnectHandlerOptions` to opt into a bounded limit.
+The HTTP wrapper uses Connect v2's default read limit of 4 MiB per message.
+Larger messages fail with `CodeResourceExhausted`. Set `connecthttp.WithReadMaxBytes`
+through `WithConnectServer` or `SupplyConnectHandlerOptions` to override the limit;
+pass `0` to explicitly allow unlimited reads. This changes v1's unlimited default.
 V2 clients also default to 4 MiB, so configure their transport separately when
 large responses are required.

@@ -98,8 +98,7 @@ func HttpPatternHandlers(patternHandlers ...httpo.HttpPatternHandler) ConnectSer
 func WithConnectServer(server *connect.Server, options ...connecthttp.Option) ConnectServerOption {
 	return func(s *ConnectServer) {
 		s.rpcServer = server
-		// Preserve v1's unlimited read size unless the caller supplies a limit.
-		s.rpcOptions = append([]connecthttp.Option{connecthttp.WithReadMaxBytes(0)}, options...)
+		s.rpcOptions = options
 	}
 }
 

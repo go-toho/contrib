@@ -195,8 +195,9 @@ func TestModuleReadLimits(t *testing.T) {
 		size    int
 		blocked bool
 	}{
-		{name: "v1 unlimited default", size: 4*1024*1024 + 1},
+		{name: "v2 default limit", size: 4*1024*1024 + 1, blocked: true},
 		{name: "explicit limit", limit: []connecthttp.Option{connecthttp.WithReadMaxBytes(1024)}, size: 2048, blocked: true},
+		{name: "explicit unlimited", limit: []connecthttp.Option{connecthttp.WithReadMaxBytes(0)}, size: 4*1024*1024 + 1},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			server := newHTTPServer(t, connectrpcofx.SupplyConnectHandler(registerEcho), connectrpcofx.SupplyConnectHandlerOptions(test.limit...))
