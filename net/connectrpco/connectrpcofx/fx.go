@@ -16,12 +16,6 @@ import (
 	"github.com/go-toho/toho/pkg/fxtags"
 )
 
-const (
-	// groupUtilityRegisterFunc holds utility services (health, reflection),
-	// registered after the application services.
-	groupUtilityRegisterFunc = "connectrpcofx.UtilityRegisterFunc"
-)
-
 var Module = fx.Module("connectrpc",
 	provideConnectConfigPointer,
 	provideConnectConfig,
@@ -65,7 +59,7 @@ var (
 			fx.ParamTags(
 				fxtags.Named(connectrpco.NamedConnectConfig),
 				fxtags.Group(connectrpco.GroupRegisterFunc),
-				fxtags.Group(groupUtilityRegisterFunc),
+				fxtags.Group(connectrpco.GroupUtilityRegisterFunc),
 				fxtags.Group(connectrpco.GroupServerInterceptor),
 				fxtags.Group(connectrpco.GroupConnectHttpOption),
 				fxtags.Group(connectrpco.GroupHttpHandler),
@@ -133,7 +127,7 @@ var WithGrpcHealthHandler = fx.Provide(
 		func() connectrpco.RegisterFunc {
 			return connectrpco.RegisterGrpcHealth
 		},
-		fx.ResultTags(fxtags.Group(groupUtilityRegisterFunc)),
+		fx.ResultTags(fxtags.Group(connectrpco.GroupUtilityRegisterFunc)),
 	),
 )
 
@@ -142,7 +136,7 @@ var WithGrpcReflectHandler = fx.Provide(
 		func() connectrpco.RegisterFunc {
 			return connectrpco.RegisterGrpcReflect
 		},
-		fx.ResultTags(fxtags.Group(groupUtilityRegisterFunc)),
+		fx.ResultTags(fxtags.Group(connectrpco.GroupUtilityRegisterFunc)),
 	),
 )
 
@@ -206,7 +200,7 @@ func SupplyUtilityRegisterFuncs(fns ...connectrpco.RegisterFunc) fx.Option {
 			func() []connectrpco.RegisterFunc {
 				return fns
 			},
-			fx.ResultTags(fxtags.GroupFlatten(groupUtilityRegisterFunc)),
+			fx.ResultTags(fxtags.GroupFlatten(connectrpco.GroupUtilityRegisterFunc)),
 		),
 	)
 }

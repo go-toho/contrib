@@ -2,6 +2,7 @@ package connectrpcofx
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -162,10 +163,22 @@ func TestModule_UtilityRegisterFuncs(t *testing.T) {
 				procedures = append(procedures, spec.Procedure)
 			}
 		}),
+		// utility services with dependencies use the group directly
+		fx.Supply(&echoService{}),
+		fx.Provide(
+			fx.Annotate(
+				func(svc *echoService) connectrpco.RegisterFunc {
+					return func(server *connect.Server) {
+						procedures = append(procedures, fmt.Sprintf("%T", svc))
+					}
+				},
+				fx.ResultTags(fxtags.Group(connectrpco.GroupUtilityRegisterFunc)),
+			),
+		),
 		SupplyRegisterFuncs(echotest.Register),
 	)
 
-	assert.Equal(t, []string{echotest.Procedure}, procedures)
+	assert.ElementsMatch(t, []string{echotest.Procedure, "*connectrpcofx.echoService"}, procedures)
 }
 
 func TestModule_Disabled(t *testing.T) {

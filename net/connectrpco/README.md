@@ -33,8 +33,9 @@ fx.New(
 )
 ```
 
-Services supplied with `SupplyUtilityRegisterFuncs` are registered after all
-application services, so they can inspect them with `connect.Server.Specs`.
+Services supplied with `SupplyUtilityRegisterFuncs`, or provided into
+`connectrpco.GroupUtilityRegisterFunc`, are registered after all application
+services, so they can inspect them with `connect.Server.Specs`.
 `WithGrpcHealthHandler` and `WithGrpcReflectHandler` use the same mechanism.
 
 Interceptors are collected from an fx value group, which has no defined order.
@@ -85,7 +86,8 @@ on your services first. Then update the wiring:
 | `SupplyConnectHandlerOptions(connect.WithReadMaxBytes(n))` and other HTTP options | `SupplyConnectHttpOptions(connecthttp.WithReadMaxBytes(n))` |
 | `GroupConnectHandler` (plain `httpo.HttpPatternHandler`) | `GroupHttpHandler` / `SupplyHttpHandlers(...)` |
 | `GroupConnectHandlerOptions` | `GroupServerInterceptor` / `GroupConnectHttpOption` |
-| `GroupUtilityConnectHandler`, `GroupConnectServiceNames` | removed; use `WithGrpcHealthHandler` / `WithGrpcReflectHandler` (service names are read from the server) |
+| `GroupUtilityConnectHandler` | `GroupUtilityRegisterFunc` / `SupplyUtilityRegisterFuncs(...)` |
+| `GroupConnectServiceNames` | removed; service names are read from the server |
 | `NewGrpcHealthHandler(services, opts...)` | `RegisterGrpcHealth` |
 | `NewGrpcReflectHandler(services, opts...)` | `RegisterGrpcReflect`, or `grpcreflect.Register(server, opts...)` for options |
 

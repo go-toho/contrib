@@ -5,7 +5,8 @@ const (
 	GroupHttpHandler    = "connectrpco.HttpHandler"
 	GroupHttpMiddleware = "connectrpco.HttpMiddleware"
 
-	GroupRegisterFunc      = "connectrpco.RegisterFunc"
-	GroupServerInterceptor = "connectrpco.ServerInterceptor"
-	GroupConnectHttpOption = "connectrpco.ConnectHttpOption"
+	GroupRegisterFunc        = "connectrpco.RegisterFunc"
+	GroupUtilityRegisterFunc = "connectrpco.UtilityRegisterFunc"
+	GroupServerInterceptor   = "connectrpco.ServerInterceptor"
+	GroupConnectHttpOption   = "connectrpco.ConnectHttpOption"
 )
