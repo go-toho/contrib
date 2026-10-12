@@ -213,7 +213,12 @@ func SupplyConnectInterceptors(interceptors ...connect.ServerInterceptor) fx.Opt
 
 // SupplyConnectHandler registers a service before the server's HTTP routes are mounted.
 func SupplyConnectHandler(register func(*connect.Server)) fx.Option {
-	return fx.Supply(fx.Annotate(register, fx.ResultTags(fxtags.Group(connectrpco.GroupConnectHandler))))
+	return fx.Supply(
+		fx.Annotate(
+			register,
+			fx.ResultTags(fxtags.Group(connectrpco.GroupConnectHandler)),
+		),
+	)
 }
 
 func SupplyHttpMiddleware(middleware ...httpo.HttpMiddleware) fx.Option {
