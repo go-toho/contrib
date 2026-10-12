@@ -93,6 +93,8 @@ var (
 				fxtags.Named(connectrpco.NamedConnectConfig),
 				"",
 				fxtags.Group(connectrpco.GroupConnectHandlerOptions),
+				fxtags.Group(connectrpco.GroupConnectHandler),
+				fxtags.Group(connectrpco.GroupUtilityConnectHandler),
 				fxtags.Group(connectrpco.GroupHttpMiddleware),
 			),
 		),
@@ -103,6 +105,8 @@ func NewConnectServer(
 	config connectrpco.ConnectConfig,
 	rpcServer *connect.Server,
 	handlerOptions []connecthttp.Option,
+	httpHandlers []httpo.HttpPatternHandler,
+	utilityHttpHandlers []httpo.HttpPatternHandler,
 	httpMiddleware []httpo.HttpMiddleware,
 ) (*connectrpco.ConnectServer, error) {
 	if !config.Enabled {
@@ -112,6 +116,8 @@ func NewConnectServer(
 	return connectrpco.NewConnectServer(
 		connectrpco.WithConnectConfig(config),
 		connectrpco.WithConnectServer(rpcServer, handlerOptions...),
+		connectrpco.HttpPatternHandlers(httpHandlers...),
+		connectrpco.HttpPatternHandlers(utilityHttpHandlers...),
 		connectrpco.HttpMiddleware(httpMiddleware...),
 	)
 }

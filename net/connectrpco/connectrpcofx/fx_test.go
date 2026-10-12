@@ -24,6 +24,7 @@ import (
 	"github.com/go-toho/contrib/middleware/corso"
 	"github.com/go-toho/contrib/net/connectrpco"
 	"github.com/go-toho/contrib/net/connectrpco/connectrpcofx"
+	"github.com/go-toho/contrib/net/httpo"
 	"github.com/go-toho/toho/pkg/fxtags"
 )
 
@@ -140,7 +141,22 @@ func TestModuleRPCAndMiddleware(t *testing.T) {
 
 func TestModuleHealthAndReflection(t *testing.T) {
 	var intercepted atomic.Int32
+	plainHandler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	})
 	server := newHTTPServer(t,
+		fx.Provide(fx.Annotate(func() httpo.HttpPatternHandler {
+			return httpo.HttpPatternHandler{Pattern: "/metrics", Handler: plainHandler}
+		}, fx.ResultTags(fxtags.Group(connectrpco.GroupConnectHandler)))),
+		fx.Provide(fx.Annotate(func() []httpo.HttpPatternHandler {
+			return []httpo.HttpPatternHandler{{Pattern: "/status", Handler: plainHandler}}
+		}, fx.ResultTags(fxtags.GroupFlatten(connectrpco.GroupUtilityConnectHandler)))),
+		connectrpcofx.SupplyHttpMiddleware(func(next http.Handler) http.Handler {
+			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("X-Middleware", "applied")
+				next.ServeHTTP(w, r)
+			})
+		}),
 		connectrpcofx.SupplyConnectHandler(registerEcho),
 		connectrpcofx.SupplyConnectHandler(func(server *connect.Server) {
 			server.Register(connect.Method{Spec: connect.Spec{Procedure: "/test.Other/Echo"}, Handler: func(context.Context, connect.Spec, connect.ServerStream) error { return nil }})
@@ -154,6 +170,13 @@ func TestModuleHealthAndReflection(t *testing.T) {
 			}
 		}),
 	)
+	for _, path := range []string{"/metrics", "/status"} {
+		response, err := server.Client().Get(server.URL + path)
+		require.NoError(t, err)
+		response.Body.Close()
+		require.Equal(t, http.StatusNoContent, response.StatusCode, path)
+		require.Equal(t, "applied", response.Header.Get("X-Middleware"))
+	}
 	client := connect.NewClient(connecthttp.NewTransport(server.Client(), server.URL, connecthttp.WithGRPC()))
 	health := grpchealth.NewClient(client)
 	for _, service := range []string{"", "test.Echo", "test.Other"} {

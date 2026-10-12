@@ -91,11 +91,23 @@ Connect errors, because that middleware uses the v1 error writer.
 | `SupplyConnectHandlerOptions(...connect.HandlerOption)` | `SupplyConnectHandlerOptions(...connecthttp.Option)` and `SupplyConnectInterceptors(...connect.ServerInterceptor)` |
 | `NewGrpcHealthHandler(services, options...)` | `RegisterGrpcHealthHandler(server, services)` |
 | `NewGrpcReflectHandler(services, options...)` | `RegisterGrpcReflectHandler(server, services)` |
-| `connectrpcofx.NewConnectServer(config, handlers, middleware, log, lifecycle) error` | `connectrpcofx.NewConnectServer(config, rpcServer, httpOptions, middleware) (*connectrpco.ConnectServer, error)` |
+| `connectrpcofx.NewConnectServer(config, handlers, middleware, log, lifecycle) error` | `connectrpcofx.NewConnectServer(config, rpcServer, httpOptions, httpHandlers, utilityHttpHandlers, middleware) (*connectrpco.ConnectServer, error)` |
 | `GroupConnectServiceNames` | Removed; application service names are collected from registered methods before utilities are added. |
 
 `GroupConnectHandler` now contains `func(*connect.Server)` registrations.
 `GroupUtilityConnectHandler` contains `func(*connect.Server, []string)` registrations.
+Both groups also continue to accept `httpo.HttpPatternHandler` values for plain
+HTTP routes. Fx distinguishes the values by type, so existing annotated providers
+still work. Plain routes share the HTTP middleware but bypass RPC interceptors
+and are excluded from the health/reflection service list. For example:
+
+```go
+fx.Supply(fx.Annotate(
+    httpo.HttpPatternHandler{Pattern: "/metrics", Handler: metricsHandler},
+    fx.ResultTags(`group:"connectrpco.ConnectHandler"`),
+))
+```
+
 `GroupConnectHandlerOptions` contains `connecthttp.Option` values.
 The new `GroupConnectInterceptor` contains `[]connect.ServerInterceptor` chains.
 Both the configured `*connect.Server` and `*connectrpco.ConnectServer` are available
