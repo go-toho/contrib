@@ -148,6 +148,26 @@ func TestModule(t *testing.T) {
 	assert.Positive(t, middlewareCalls.Load())
 }
 
+func TestModule_UtilityRegisterFuncs(t *testing.T) {
+	var procedures []string
+
+	// the server is built when the app is created, so it does not need to start
+	fxtest.New(t,
+		Module,
+		supplyConfig(connectrpco.ConnectConfig{Enabled: true, Addr: freeAddr(t)}),
+		fx.Provide(func() fx.Printer { return testPrinter{t} }),
+		// supplied before the application service on purpose
+		SupplyUtilityRegisterFuncs(func(server *connect.Server) {
+			for spec := range server.Specs() {
+				procedures = append(procedures, spec.Procedure)
+			}
+		}),
+		SupplyRegisterFuncs(echotest.Register),
+	)
+
+	assert.Equal(t, []string{echotest.Procedure}, procedures)
+}
+
 func TestModule_Disabled(t *testing.T) {
 	addr := freeAddr(t)
 

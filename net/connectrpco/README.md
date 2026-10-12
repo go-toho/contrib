@@ -33,6 +33,10 @@ fx.New(
 )
 ```
 
+Services supplied with `SupplyUtilityRegisterFuncs` are registered after all
+application services, so they can inspect them with `connect.Server.Specs`.
+`WithGrpcHealthHandler` and `WithGrpcReflectHandler` use the same mechanism.
+
 Interceptors are collected from an fx value group, which has no defined order.
 If ordering matters, supply them together in one `SupplyServerInterceptors` call.
 

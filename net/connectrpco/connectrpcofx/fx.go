@@ -196,6 +196,21 @@ func SupplyRegisterFuncs(fns ...connectrpco.RegisterFunc) fx.Option {
 	)
 }
 
+// SupplyUtilityRegisterFuncs registers utility services, which run after all
+// application services. Use it when registration needs to inspect the
+// application services, e.g. a custom health checker built on
+// connect.Server.Specs.
+func SupplyUtilityRegisterFuncs(fns ...connectrpco.RegisterFunc) fx.Option {
+	return fx.Provide(
+		fx.Annotate(
+			func() []connectrpco.RegisterFunc {
+				return fns
+			},
+			fx.ResultTags(fxtags.GroupFlatten(groupUtilityRegisterFunc)),
+		),
+	)
+}
+
 func SupplyServerInterceptors(interceptors ...connect.ServerInterceptor) fx.Option {
 	return fx.Provide(
 		fx.Annotate(
