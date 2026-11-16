@@ -7,7 +7,7 @@ toolchain go1.27.4
 require (
 	connectrpc.com/connect/v2 v2.0.2
 	connectrpc.com/cors v0.1.0
-	connectrpc.com/grpchealth/v2 v2.0.0
+	connectrpc.com/grpchealth/v2 v2.1.0
 	connectrpc.com/grpcreflect/v2 v2.0.0
 	connectrpc.com/otelconnect v0.12.0
 	github.com/creasty/defaults v1.11.0
